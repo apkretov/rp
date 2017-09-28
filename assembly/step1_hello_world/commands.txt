@@ -1,0 +1,11 @@
+# Print system information. It must contain "x86_64".
+uname -a
+
+#Install the tools.
+sudo apt-get install nasm
+
+#Compile an object code. elf64 stands for a 64-bit code.
+nasm hello.asm -f elf64 -o hello.o
+
+#Compile an executable programme from object code.
+ld hello.o -o hello

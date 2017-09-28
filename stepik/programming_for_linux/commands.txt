@@ -1,0 +1,40 @@
+#Install the tools.
+sudo apt-get install build-essential vim
+
+#Check the versions.
+gcc --version
+make --versio
+
+#Adjust vim.
+vim ~/.vimrc
+set number                                                                                                                                                          
+colorscheme darkblue                                                                                                                                                
+                            
+#Compile an executable programme. Both notations are valid: source-destination and vice versa.
+gcc main.c -o hello
+gcc -o hello main.c
+
+#Compile an object code without linking. The -c (the compile flag) can be placed in three different positions.
+gcc -o hello.o hello.c -c
+gcc -c -o hello.o hello.c
+gcc -o hello.o -c hello.c
+
+#Compile an executable programme from object codes.
+gcc -o hello hello.o main.o
+
+#Compile a shared object. -fPIC is needed for a 64-bit processor.
+gcc -o libHello.so hello.c -shared -fPIC
+
+#Find out the names of a shared object's functions.
+nm libHello.so
+
+#Compile an executable programme with a shared object. Both notations are valid: source-destination and vice versa. 
+gcc main.c -L. -lHello -o hello
+gcc -o hello main.cpp -L. -lHello
+
+#Assign the dynamic linker's environment variable the shared object's current path.
+export LD_LIBRARY_PATH=.
+
+#Print shared object dependencies.
+ldd hello
+ldd libHello.so

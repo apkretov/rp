@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- Learn HTML in 15 Minutes @ https://www.youtube.com/watch?v=Ggh_y-33Eso -->
+
+<!-- Step 0. The HTML header. -->
+
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
+<!DOCTYPE html [
+  <!ENTITY % newTabDTD SYSTEM "chrome://browser/locale/newTab.dtd">
+  %newTabDTD;
+  <!ENTITY % browserDTD SYSTEM "chrome://browser/locale/browser.dtd">
+  %browserDTD;
+  <!ENTITY % globalDTD SYSTEM "chrome://global/locale/global.dtd">
+  %globalDTD;
+]>
+<html xmlns="http://www.w3.org/1999/xhtml" hasbrowserhandlers="true" hasBrowserHandlers="true">
+<head>
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<style type="text/css">
+
+  h1 
+</style>
+
+<meta name="description" content="Welcome to Bob's Hardware, We sell" />
+
+<meta name="keywords" content="Flowers, Seeds, Rakes, Shovels, Hardware Store" />
+
+<meta name="author" content="Bob Smith" />
+
+<title>Welcome to Bob's Hardware Store, we sell Flowers, Seeds, Rakes</title>
+
+</head>
+
+<body xmlns="http://www.w3.org/1999/xhtml"> <!-- <body xmlns="http://www.w3.org/1999/xhtml" bgcolor="393F4C"> 393F4C is Firefox developer's background colour. -->
+
+<a href="https://www.youtube.com/watch?v=Ggh_y-33Eso" target="_blank">Learn HTML in 15 Minutes</a>
+
+    <h1> Step 1. Headers. </h1>
+
+    <h1>H1</h1>
+    <h2>H2</h2>
+    <h3>H3</h3>
+    <h4>H4</h4>
+    <h5>H5</h5>
+    <h6>H6</h6>
+    
+    <br />
+
+
+    <h1>Step 2. Slyling.</h1>
+    
+    <b>Bold</b><br />
+    <big>Big</big><br />
+    
+    <blockquote>Indent this text and style</blockquote><br />
+    
+    <center>Center me please</center><br />
+    <em>I like italic</em>
+    <i>me too</i>
+    
+    <p>I am a big paragraph</p>
+    
+    <q>I am a quote</q>
+    
+    <s>I have been struck</s>
+    
+    <small>I feel small</small>
+    
+    <strong>I am strong</strong><br />
+    
+    <sub>subscript</sub>
+    
+    <sup>super</sup>
+    
+    <br /><br /><br />
+    
+
+    <h1>Step 3. Pictures.</h1>
+    <img src="http://newthinktank.com/wp-content/uploads/2010/03/marketing-examples45_sm_sm.jpg" alt="Merril Lynch Ad" height="415" width="300"/>
+    <br /><br /><br />
+        
+    
+    <h1>Step 4. Lists.</h1>
+    
+    <h2>Definition list.</h2>
+    <dl>
+        <dt>Bicycle</dt> <!-- dt - definition tag(?) -->
+        <dd>Has two wheels</dd> <!-- dd - definition data(?) -->
+    </dl>
+    
+    <h2>Ordered list.</h2>
+    <ol>
+        <li>Car</li> <!-- li - list item(?) -->
+        <li>Truck</li>
+    </ol>
+    
+    <h2>Unordered list.</h2>
+    <ul>
+        <li>Car</li> <!-- li - list item(?) -->
+        <li>Truck</li>        
+    </ul>
+    <br />
+    
+    
+    <h1>Step 5. Links or anchor tags.</h1>
+    
+    <h2>target="_blank"</h2>
+    <a href="http://newthinktank.com" target="_blank">Awesome website</a>
+
+    <h3>My web site</h3>
+    <a href="https://apkretov.000webhostapp.com" target="_blank">My web site</a>
+    
+
+    <h2>target="_self"</h2>
+    <a href="http://newthinktank.com" target="_self">Awesome website</a>
+    
+    <br /><br /><br />
+    
+        
+    <h1>Step 6. Tables.</h1>
+    
+    <table summary="Here is a table">
+
+        <caption>
+            Some things I did
+        </caption>
+            
+            <tr> <!-- Table row. -->
+                <th>Sat</th> <!-- Table column (header?) -->
+                <th>Sun</th>
+            </tr>
+            
+            <tr> <!-- Table row. -->
+                <th>Rode bike</th> <!-- Table column (header?) -->
+                <th>Ran</th>
+            </tr>
+
+    </table>
+    
+    <br /><br />
+    
+    
+    <h1>Step 7. Forms.</h1>
+
+    <h2>input type="text"</h2>
+    
+    <form action="http://www.newthinktank.com/mail2.php" method="post">
+        <b>Send Message to this Email</b><br />
+        <input type="text" name="email" size="40" /><br />
+    </form><br />
+
+    <h2>textarea</h2>
+    
+    <form action="http://www.newthinktank.com/mail2.php" method="post">
+        <b>Send Message to this Email</b><br />
+        <textarea cols="40" rows="10" name="message" size="40">Default text</textarea><br />
+    </form><br />
+    
+    <h2>input type="password"</h2>
+    
+    <form action="http://www.newthinktank.com/mail2.php" method="post">
+        <b>Enter password</b><br />
+        <input type="password" name="password" size="40" /><br />
+    </form><br />
+
+    <h2>input type="radio"</h2>
+    
+    <form action="http://www.newthinktank.com/mail2.php" method="post">
+        <b>Send Message to this Email</b><br />
+        <input type="radio" name="email" value="Home" /> Home Email
+        <input type="radio" name="email" value="Work" /> Work Email
+    </form><br />
+    
+    <h2>input type="checkbox"</h2>
+    
+    <form action="http://www.newthinktank.com/mail2.php" method="post">
+        <b>Send Message to this Email</b><br />
+        <input type="checkbox" name="checkboxinput" value="Love Checkboxes" />Love Checkboxes<br />
+        <input type="checkbox" name="checkboxinput" value="Hate Checkboxes" />Hate Checkboxes<br />
+    </form><br />
+
+    <h2>select, input type="submit"</h2>
+    
+    <form action="http://www.newthinktank.com/mail2.php" method="post">
+
+        <h3>select</h3>
+        
+        <select name="selectinput">
+            <option value="loveselect">I love</option>
+            <option value="hateselect">I hate</option>
+        </select>
+    
+        <!-- Button. -->
+        <h3>input type="submit"</h3>
+        <input type="submit" value="Send" />
+        
+        <h3>input type="hidden"</h3>
+        <input type="hidden" name="Submitted" value="True" />
+        
+    </form><br />
+
+</body>
+
+</html>
