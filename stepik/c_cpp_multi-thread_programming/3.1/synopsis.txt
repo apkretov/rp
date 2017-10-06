@@ -1,0 +1,48 @@
+Step 2.
+
+int s = socket(domain, type, protocol); //Create an endpoint for communication.
+
+	domain: AF_INET - IPv4 socket.
+			AF_INET6 - IPv6 socket.
+			AF_UNIX - Unix socket.
+
+	type:	SOCK_STREM - TCP.
+			SOCK_DGRAM - UDP.
+
+	protocol: IPPROTO_TCP - TCP.
+			  IPPROTO_UDP - UDP.
+			  0 - Default = IPPROTO_TCP/IPPROTO_UDP for SOCK_STRAM/SOCK_DGRAM respectively.
+
+
+Step 3.
+
+bind(s, (struct sockaddr *)sa, sizeof(sa)); //Bind a name to a socket
+
+struct sockaddr_in sa; //An IPv4 AF_INET socket address.
+					   //See also: 9.24. struct sockaddr and pals @ http://beej.us/guide/bgnet/output/html/multipage/sockaddr_inman.html.
+sa.sin_family = AF_INET;
+sa.sin_port = htnos(12345); //htonl, htons, ntohl, ntohs - Convert values between host and network byte order. 
+							//See also: 9.12. htons(), htonl(), ntohs(), ntohl() @ http://beej.us/guide/bgnet/output/html/multipage/htonsman.html
+sa.sin_addr.s_addr = htonl(INADDR_LOOPBACK); //IP address.
+											 //INADDR_LOOPBACK = (127.0.0.1) - An internal address of the PC that a connection is arranged at.
+											 //INADDR_ANY = (0.0.0.0) - An access to all available server addresses.
+
+ip = inet_addr("10.0.0.1"); //Convert the Internet host address cp from IPv4 numbers-and-dots notation into binary data in network byte order.
+inet_pton(AF_INET, "10.0.0.1", &(sa.sin_addr)); //Convert IPv4 and IPv6 addresses from text to binary form.
+
+struct sockaddr_in6 sa; //An IPv6 AF_INET socket address.
+						//See also: 9.24. struct sockaddr and pals @ http://beej.us/guide/bgnet/output/html/multipage/sockaddr_inman.html.
+struct sockaddr_un sa; //A UNIX domain socket address (see also Linux Programmer's Manual @ http://man7.org/linux/man-pages/man7/unix.7.html)
+sa.sun_family = AF_UNIX;
+strcpy(sa.sun_path, "/tmp/a.sock"); //The path name to the file.
+
+
+Step 4.
+
+listen(s, SOMAXCONN); //int listen(int sockfd, int backlog); - Listen for connections on a socket.
+					  //backlog defines the maximum length to which the queue of pending connections for sockfd may grow.
+while(s1 = accept(s, 0, 0)) { //int accept(int s, struct sockaddr *addr, socklen_t *addrlen); Accepts an incoming connection on a listening socket.
+							  //Returns the newly connected socket descriptor, or -1 on error, with errno set appropriately.
+							  //9.1. accept() @ http://beej.us/guide/bgnet/output/html/multipage/acceptman.html
+	
+}
