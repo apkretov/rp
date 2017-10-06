@@ -1,0 +1,10 @@
+Binary search tree (list-tree?)
+
+2-3-Tree:
+	2-Top
+	3-Top
+	List-top
+
+Red & Blanck tree
+
+B-tree
