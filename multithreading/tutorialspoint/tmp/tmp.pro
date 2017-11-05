@@ -4,4 +4,4 @@ CONFIG -= app_bundle
 CONFIG -= qt
 
 SOURCES += \
-    ../test.cpp
+    ../3_joining_detaching_threads/test.cpp

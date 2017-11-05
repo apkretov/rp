@@ -1,4 +1,4 @@
-//C++ Multithreading @ https://www.tutorialspoint.com/cplusplus/cpp_multithreading.htm
+//Creating Threads @ https://www.tutorialspoint.com/cplusplus/cpp_multithreading.htm
 #include <iostream>
 #include <cstdlib>
 #include <pthread.h>
