@@ -96,10 +96,11 @@ int main(int argc, char *argv[]) { //Each request is queued to a server thread, 
 				next = next->link;
 			} //49
 
-			if (next == NULL) { //If we reached the end of the list, insert the new alarm there, ("next" is NULL, and "last" points to the link field of the last item, or to the list header).
-				*last = alarm;
+			//If we reached the end of the list, insert the new alarm there, ("next" is NULL, and "last" points to the link field of the last item, or to the list header).
+			if (next == NULL) { //56-59: If no alarm with a time greater than or equal to the new alarm's time is found,
+				*last = alarm; //56-59: then the new alarm is inserted at the end of the list. That is, if the alarm pointer is NULL on exit from the search loop (the last entry on the list always has a link pointer of NULL), the previous entry (or queue head) is made to point to the new entry.
 				alarm->link = NULL;
-			}
+			} //59
 			#ifdef DEBUG
 				printf ("[list: ");
 				for (next = alarm_list; next != NULL; next = next->link)
