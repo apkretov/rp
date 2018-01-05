@@ -19,7 +19,7 @@ void* alarm_thread(void *arg) {
 	return NULL;
 }
 
-int main (int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
 	int status;
 	char line[128];
 	alarm_t* alarm;
@@ -37,7 +37,7 @@ int main (int argc, char *argv[]) {
 
 		if (sscanf(line, "%d %64[^\n]", &alarm->seconds, alarm->message) < 2) { //Parse input line into seconds (%d) and a message (%64[^\n]), consisting of up to 64 characters separated from the seconds by whitespace.
 			fprintf (stderr, "Bad command\n");
-			free (alarm);
+			free(alarm);
 		} else {
 			status = pthread_create(&thread, NULL, alarm_thread, alarm);
 			if (status != 0)
