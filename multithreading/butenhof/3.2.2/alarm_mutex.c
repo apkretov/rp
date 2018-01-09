@@ -2,7 +2,7 @@
 #include <time.h>
 #include "errors.h"
 
-typedef struct alarm_tag { //The "alarm" structure now contains the time_t (time since the Epoch, in seconds) for each alarm, so that they can be sorted. Storing the requested number of seconds would not be enough, since the "alarm thread" cannot tell how long it has been on the list.
+typedef struct alarm_tag { //The "alarm" structure now contains the time_t for each alarm, so that they can be sorted. Storing the requested number of seconds would not be enough, since the "alarm thread" cannot tell how long it has been on the list.
 	struct alarm_tag* link;
 	int seconds;
 	time_t time; //seconds from EPOCH
