@@ -45,9 +45,9 @@ int pipe_send(stage_t* stage, long data) { //Part 2 shows pipe_send, a utility f
 }
 
 //Part 3 shows pipe_stage, the start function for each thread in the pipeline. The thread's argument is a pointer to its stage_t structure.
-//The thread start routine for pipe stage threads. Each will wait for a data item passed from the caller or the previous stage, modify the data and pass it along to the next(or final) stage.
+//The thread start routine for pipe stage threads. Each will wait for a data item passed from the caller or the previous stage, modify the data and pass it along to the next (or final) stage.
 void* pipe_stage(void* arg) {
-	stage_t* stage =(stage_t*)arg;
+	stage_t* stage = (stage_t*)arg;
 	stage_t* next_stage = stage->next;
 	int status;
 
