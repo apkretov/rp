@@ -54,13 +54,14 @@ void* pipe_stage(void* arg) {
 	status = pthread_mutex_lock(&stage->mutex); if (status != 0) err_abort(status, "Lock pipe stage");
 	while (1) { //16-27 The thread loops forever, processing data. Because the mutex is locked outside the loop, the thread appears to have the pipeline stage's mutex locked all the time. However, it spends most of its time waiting for new data, on the avail condition variable. Remember that a thread automatically unlocks the mutex associated with a condition variable, while waiting on that condition variable. In reality, therefore, the thread spends most of its time with mutex unlocked.
 		while (stage->data_ready != 1) {
-			status = pthread_cond_wait(&stage->avail, &stage->mutex); if (status != 0)	err_abort(status, "Wait for previous stage");
+			status = pthread_cond_wait(&stage->avail, &stage->mutex); if (status != 0)	err_abort(status, "Wait for previous stage"); //A condition variable wait always returns with the mutex locked. @ 1. 3.3 Condition variables.
 		}
 		pipe_send(next_stage, stage->data + 1); //22-26 When given data, the thread increases its own data value by one, and passes the result to the next stage. The thread then records that the stage no longer has data by clearing the data_ready flag, and signals the ready condition variable to wake any thread that might be waiting for this pipeline stage.
 		stage->data_ready = 0;
 		status = pthread_cond_signal(&stage->ready);	if (status != 0) err_abort(status, "Wake next stage"); //26
 	} //27
 } //Notice that the routine never unlocks the stage->mutex. The call to pthread_cond_wait implicitly unlocks the mutex while the thread is waiting, allowing other threads to make progress. Because the loop never terminates, this function has no need to unlock the mutex explicitly.
+  //Waiting on a condition variable atomically releases the associated mutex and waits until another thread signals the condition variable. The mutex must always be locked when you wait on a condition variable and, when a thread wakes up from a condition variable wait, it always resumes with the mutex locked. @ 3.3 Condition variables
 
 int pipe_create(pipe_t* pipe, int stages) { //Part 4 shows pipe_create, the function that creates a pipeline. It can create a pipeline of any number of stages, linking them together in a list.			//External interface to create a pipeline. All the data is initialized and the threads created. They'll wait for data.
 	int pipe_index;
