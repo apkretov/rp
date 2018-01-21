@@ -54,7 +54,7 @@ int main(int argc, char *argv[]) { //Each request is queued to a server thread, 
 	pthread_t thread;
 	status = pthread_create(&thread, NULL, alarm_thread, NULL); /*8-11: Create the server thread that will process all alarm requests.*/ if (status != 0) err_abort (status, "Create alarm thread"); /*11*/
 	while (1) {
-		printf("alarm> \n"); //13-28: Read and process a command, much as in any of the other versions of our alarm program. As in alarm_thread.c, the data is stored in a heap structure allocated by malloc.
+		printf("alarm> "); //13-28: Read and process a command, much as in any of the other versions of our alarm program. As in alarm_thread.c, the data is stored in a heap structure allocated by malloc.
 		if (fgets(line, sizeof(line), stdin) == NULL) exit (0);
 		if (strlen (line) <= 1) continue;
 		alarm = (alarm_t*)malloc(sizeof(alarm_t)); if (alarm == NULL) errno_abort("Allocate alarm");
