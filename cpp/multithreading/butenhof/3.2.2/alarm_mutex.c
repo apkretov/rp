@@ -67,7 +67,7 @@ int main(int argc, char *argv[]) { //Each request is queued to a server thread, 
 			last = &alarm_list; //39-49: The alarms are sorted in order of expiration time on the alarm_list queue. //Insert the new alarm into the list of alarms, sorted by expiration time.
 			next = *last; /*TEST: next = alarm_list;*/ //My test works for sure but only at the first loop. Then, after "*last = alarm;" below, it needs checking but seems correct.
 			while (next != NULL) { //39-49: The insertion code searches the queue
-				if (/*ORIG: next->time >= alarm->time*/ alarm->time <= next->time) { //39-49: until it finds the first entry with a time greater than or equal to the new alarm's time.
+				if (next->time >= alarm->time) { //39-49: until it finds the first entry with a time greater than or equal to the new alarm's time.
 					alarm->link = next; //39-49: The new entry is inserted preceding the located entry.
 					*last = alarm; //39-49: Because alarm_list is a simple linked list, the traversal maintains a current entry pointer(this) and a pointer to the previous entry's link member, or to the alarm_list head pointer(last).
 					break;
