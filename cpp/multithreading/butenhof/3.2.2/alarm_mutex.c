@@ -57,7 +57,7 @@ int main(int argc, char *argv[]) { //Each request is queued to a server thread, 
 		printf("alarm> "); //13-28: Read and process a command, much as in any of the other versions of our alarm program. As in alarm_thread.c, the data is stored in a heap structure allocated by malloc.
 		if (fgets(line, sizeof(line), stdin) == NULL) exit(0);
 		if (strlen(line) <= 1) continue;
-		alarm = (alarm_t*)malloc(sizeof(alarm_t)); if (alarm == NULL) errno_abort("Allocate alarm"); printf("main 1. alarm: %x \n", alarm);
+		alarm = (alarm_t*)malloc(sizeof(alarm_t)); if (alarm == NULL) errno_abort("Allocate alarm");
 		if (sscanf(line, "%d %64[^\n]", &alarm->seconds, alarm->message) < 2) { //Parse input line into seconds(%d) and a message(%64[^\n]), consisting of up to 64 characters separated from the seconds by whitespace.
 			fprintf(stderr, "Bad command\n");
 			free(alarm); //28
