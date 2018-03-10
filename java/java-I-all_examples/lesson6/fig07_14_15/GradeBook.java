@@ -1,154 +1,75 @@
-// Fig. 7.14: GradeBook.java
-// Grade book using an array to store test grades.
-
-public class GradeBook
-{
+public class GradeBook { // Fig. 7.14: GradeBook.java // Grade book using an array to store test grades.
    private String courseName; // name of course this GradeBook represents
    private int grades[]; // array of student grades
    
-   // two-argument constructor initializes courseName and grades array
-   public GradeBook( String name, int gradesArray[] )
-   {
+   public GradeBook(String name, int gradesArray[]) { // two-argument constructor initializes courseName and grades array
       courseName = name; // initialize courseName
       grades = gradesArray; // store grades
-   } // end two-argument GradeBook constructor
-
-   // method to set the course name
-   public void setCourseName( String name )
-   {
+   }
+   
+   public void setCourseName(String name) { // method to set the course name
       courseName = name; // store the course name
-   } // end method setCourseName
-
-   // method to retrieve the course name
-   public String getCourseName()
-   {
+   }
+   
+   public String getCourseName() { // method to retrieve the course name
       return courseName;
-   } // end method getCourseName
-
-   // display a welcome message to the GradeBook user
-   public void displayMessage()
-   {
-      // getCourseName gets the name of the course
-      System.out.printf( "Welcome to the grade book for\n%s!\n\n", 
-         getCourseName() );
-   } // end method displayMessage
-
-   // perform various operations on the data
-   public void processGrades()
-   {
-      // output grades array
-      outputGrades();
-
-      // call method getAverage to calculate the average grade      
-      System.out.printf( "\nClass average is %.2f\n", getAverage() ); 
-
-      // call methods getMinimum and getMaximum
-      System.out.printf( "Lowest grade is %d\nHighest grade is %d\n\n",
-         getMinimum(), getMaximum() );
-
-      // call outputBarChart to print grade distribution chart
-      outputBarChart();
-   } // end method processGrades
-
-   // find minimum grade
-   public int getMinimum()
-   { 
+   }
+   
+   public void displayMessage() { // display a welcome message to the GradeBook user
+      System.out.printf("Welcome to the grade book for\n%s!\n\n", getCourseName()); // getCourseName gets the name of the course
+   }
+   
+   public void processGrades() { // perform various operations on the data
+      outputGrades(); // output grades array
+      System.out.printf("\nClass average is %.2f\n", getAverage()); // call method getAverage to calculate the average grade      
+      System.out.printf("Lowest grade is %d\nHighest grade is %d\n\n", getMinimum(), getMaximum()); // call methods getMinimum and getMaximum
+      outputBarChart(); // call outputBarChart to print grade distribution chart
+   }
+   
+   public int getMinimum() { // find minimum grade
       int lowGrade = grades[ 0 ]; // assume grades[ 0 ] is smallest
-
-      // loop through grades array
-      for ( int grade : grades ) 
-      {
-         // if grade lower than lowGrade, assign it to lowGrade
-         if ( grade < lowGrade )
+      for (int grade : grades) { // loop through grades array
+         if (grade < lowGrade) // if grade lower than lowGrade, assign it to lowGrade
             lowGrade = grade; // new lowest grade
-      } // end for
-
+      }
       return lowGrade; // return lowest grade
-   } // end method getMinimum
-
-   // find maximum grade
-   public int getMaximum()
-   { 
+   }
+   
+   public int getMaximum() { // find maximum grade
       int highGrade = grades[ 0 ]; // assume grades[ 0 ] is largest
-
-      // loop through grades array
-      for ( int grade : grades ) 
-      {
-         // if grade greater than highGrade, assign it to highGrade
-         if ( grade > highGrade )
+      for (int grade : grades) { // loop through grades array
+         if (grade > highGrade) // if grade greater than highGrade, assign it to highGrade
             highGrade = grade; // new highest grade
-      } // end for
-
+      }
       return highGrade; // return highest grade
-   } // end method getMaximum
-
-   // determine average grade for test
-   public double getAverage()
-   {      
+   }
+   
+   public double getAverage() { // determine average grade for test
       int total = 0; // initialize total
- 
-      // sum grades for one student
-      for ( int grade : grades )
+      for (int grade : grades) // sum grades for one student
          total += grade;
-
-      // return average of grades
-      return (double) total / grades.length;
-   } // end method getAverage
-
-   // output bar chart displaying grade distribution
-   public void outputBarChart()
-   {
-      System.out.println( "Grade distribution:" );
-
-      // stores frequency of grades in each range of 10 grades
-      int frequency[] = new int[ 11 ];
-      
-      // for each grade, increment the appropriate frequency 
-      for ( int grade : grades )
+      return (double) total / grades.length; // return average of grades
+   }
+   
+   public void outputBarChart() { // output bar chart displaying grade distribution
+      System.out.println("Grade distribution:");
+      int frequency[] = new int[ 11 ]; // stores frequency of grades in each range of 10 grades
+      for (int grade : grades) // for each grade, increment the appropriate frequency 
          ++frequency[ grade / 10 ];
-
-      // for each grade frequency, print bar in chart
-      for ( int count = 0; count < frequency.length; count++ )
-      {
-         // output bar label ( "00-09: ", ..., "90-99: ", "100: " )
-         if ( count == 10 )
-            System.out.printf( "%5d: ", 100 ); 
+      for (int count = 0; count < frequency.length; count++) { // for each grade frequency, print bar in chart
+         if (count == 10) // output bar label ("00-09: ", ..., "90-99: ", "100: ")
+            System.out.printf("%5d: ", 100); 
          else
-            System.out.printf( "%02d-%02d: ", 
-               count * 10, count * 10 + 9  ); 
-         
-         // print bar of asterisks
-         for ( int stars = 0; stars < frequency[ count ]; stars++ )
-            System.out.print( "*" );
-
+            System.out.printf("%02d-%02d: ", count * 10, count * 10 + 9);
+         for (int stars = 0; stars < frequency[ count ]; stars++) // print bar of asterisks
+            System.out.print("*");
          System.out.println(); // start a new line of output
-      } // end outer for
-   } // end method outputBarChart
+      }
+   }
 
-   // output the contents of the grades array
-   public void outputGrades()
-   {    
-      System.out.println( "The grades are:\n" );
-      
-      // output each student's grade
-      for ( int student = 0; student < grades.length; student++ ) 
-         System.out.printf( "Student %2d: %3d\n", 
-            student + 1, grades[ student ] );
-   } // end method outputGrades
-} // end class GradeBook
-
-
-/**************************************************************************
- * (C) Copyright 1992-2007 by Deitel & Associates, Inc. and               *
- * Pearson Education, Inc. All Rights Reserved.                           *
- *                                                                        *
- * DISCLAIMER: The authors and publisher of this book have used their     *
- * best efforts in preparing the book. These efforts include the          *
- * development, research, and testing of the theories and programs        *
- * to determine their effectiveness. The authors and publisher make       *
- * no warranty of any kind, expressed or implied, with regard to these    *
- * programs or to the documentation contained in these books. The authors *
- * and publisher shall not be liable in any event for incidental or       *
- * consequential damages in connection with, or arising out of, the       *
- * furnishing, performance, or use of these programs.                     *
- *************************************************************************/
+   public void outputGrades() { // output the contents of the grades array
+      System.out.println("The grades are:\n");
+      for (int student = 0; student < grades.length; student++) // output each student's grade
+         System.out.printf("Student %2d: %3d\n", student + 1, grades[ student ]);
+   }
+}
