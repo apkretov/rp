@@ -42,9 +42,9 @@ void alarm_insert(alarm_t* alarm) { // Insert alarm entry on list, in order.
 #endif
 	//Wake the alarm thread if it is not busy(that is, if current_alarm is 0, signifying that it's waiting for work), or if the new alarm comes before the one on which the alarm thread is waiting.
 	if (current_alarm == 0 || alarm->time < current_alarm) { //48-53: If current_alarm(the time of the next alarm expiration) is 0. then the alarm_thread is not aware of any outstanding alarm requests, and is waiting for new work. If current_alarm has a time greater than the expiration time of the new alarm, then alarm_thread is not planning to look for new work soon enough to handle the new alarm. In either case, signal the alarm_cond condition variable so that alarm_thread will wake up and process the new alarm.
-		current_alarm = alarm->time; /*printf("alarm_insert 1 \t Before pthread_cond_signal. \n");*/
+		current_alarm = alarm->time; printf("alarm_insert 1 \t Before pthread_cond_signal. \n");
 
-		status = pthread_cond_signal(&alarm_cond); /*printf("alarm_insert 2 \t After pthread_cond_signal. \n");*/ if (status != 0)	err_abort(status, "Signal cond");
+		status = pthread_cond_signal(&alarm_cond); printf("alarm_insert 2 \t After pthread_cond_signal. \n"); if (status != 0)	err_abort(status, "Signal cond");
 
 	} //53
 }
@@ -61,8 +61,8 @@ void* alarm_thread(void* arg) { // The alarm thread's start routine.
 	while (1) {
 		//If the alarm list is empty, wait until an alarm is added. Setting current_alarm to 0 informs the insert routine that the thread is not busy.
 		current_alarm = 0; /*printf("\nalarm_thread 1 \t Before while (alarm_list == NULL). \n");*/ //26 //26-31 If the alarm_list is empty, alarm_mutex.c could do nothing but sleep anyway, so that main would be able to process a new command. The result was that it could not see a new alarm request for at least a full second. Now, alarm_thread instead waits on the alarm_cond condition variable, with no timeout. It will "sleep" until you enter a new alarm command, and then main will be able to awaken it immediately. Setting current_alarm to 0 tells main that alarm_thread is idle. Remember that pthread_cond_wait unlocks the mutex before waiting, and relocks the mutex before returning to the caller.
-		while (alarm_list == NULL) { /*printf("\nalarm_thread 1 \t Before pthread_cond_wait. \n");*/
-			status = pthread_cond_wait(&alarm_cond, &alarm_mutex); /*printf("\nalarm_thread 2 \t After pthread_cond_wait. \n");*/ if (status != 0) err_abort(status, "Wait on cond");
+		while (alarm_list == NULL) { printf("\nalarm_thread 1 \t Before pthread_cond_wait. \n");
+			status = pthread_cond_wait(&alarm_cond, &alarm_mutex); printf("\nalarm_thread 2 \t After pthread_cond_wait. \n"); if (status != 0) err_abort(status, "Wait on cond");
 		} /*printf("alarm_thread 4 \t After while (alarm_list == NULL). \n");*/ //31
 		alarm = alarm_list;
 		alarm_list = alarm->link;
@@ -75,9 +75,9 @@ void* alarm_thread(void* arg) { // The alarm thread's start routine.
 			cond_time.tv_sec = alarm->time;
 			cond_time.tv_nsec = 0; //42
 			current_alarm = alarm->time; //43 Record the expiration time in the current_alarm variable so that main can determine whether to signal alarm_cond when a new alarm is added.
-			while (current_alarm == alarm->time) { /*printf("alarm_thread 3 \t Before pthread_cond_timedwait. \n\n");*/ //44-53 Wait until either the current alarm has expired, or main requests that alarm_ thread look for a new, earlier alarm. Notice that the predicate test is split here, for convenience. The expression in the while statement is only half the predicate, detecting that main has changed current_alarm by inserting an earlier timer. When the timed wait returns ETIMEDOUT, indicating that the current alarm has expired, we exit the while loop with a break statement at line 49.
-				status = pthread_cond_timedwait(&alarm_cond, &alarm_mutex, &cond_time); /*printf("alarm_thread 4 \t After pthread_cond_timedwait. \n");*/
-				if (status == ETIMEDOUT) { /*printf("alarm_thread 5 \t status == ETIMEDOUT. \n");*/
+			while (current_alarm == alarm->time) { printf("alarm_thread 3 \t Before pthread_cond_timedwait. \n\n"); //44-53 Wait until either the current alarm has expired, or main requests that alarm_ thread look for a new, earlier alarm. Notice that the predicate test is split here, for convenience. The expression in the while statement is only half the predicate, detecting that main has changed current_alarm by inserting an earlier timer. When the timed wait returns ETIMEDOUT, indicating that the current alarm has expired, we exit the while loop with a break statement at line 49.
+				status = pthread_cond_timedwait(&alarm_cond, &alarm_mutex, &cond_time); printf("alarm_thread 4 \t After pthread_cond_timedwait. \n");
+				if (status == ETIMEDOUT) { printf("alarm_thread 5 \t status == ETIMEDOUT. \n");
 					expired = 1;
 					break;
 				}
@@ -109,7 +109,7 @@ int main(int argc, char* argv[]) {
 		if (strlen(line) <= 1) continue;
 		alarm =(alarm_t*)malloc(sizeof(alarm_t)); if (alarm == NULL) errno_abort("Allocate alarm");
 		if (sscanf(line, "%d %64[^\n]", &alarm->seconds, alarm->message) < 2) { fprintf(stderr, "Bad command\n"); free(alarm); //Parse input line into seconds(%d) and a message(%64[^\n]), consisting of up to 64 characters separated from the seconds by whitespace.
-		} else { /*printf("main 1 \t\t Before pthread_mutex_lock. \n");*/
+		} else { printf("main 1 \t\t Before pthread_mutex_lock. \n");
 
 			status = pthread_mutex_lock(&alarm_mutex); /*printf("main 2 \t\t After pthread_mutex_lock. \n");*/ if (status != 0) err_abort(status, "Lock mutex");
 
@@ -117,7 +117,7 @@ int main(int argc, char* argv[]) {
 			//Insert the new alarm into the list of alarms, sorted by expiration time.
 			alarm_insert(alarm); /*printf("main 3 \t\t Before pthread_mutex_unlock. \n");*/ //38 Because the condition variable signal operation is built into the new alarm_insert function, we call alarm_insert rather than inserting a new alarm directly.
 
-			status = pthread_mutex_unlock(&alarm_mutex); /*printf("main 2 \t\t After pthread_mutex_unlock. \n");*/ if (status != 0) err_abort(status, "Unlock mutex");
+			status = pthread_mutex_unlock(&alarm_mutex); printf("main 2 \t\t After pthread_mutex_unlock. \n"); if (status != 0) err_abort(status, "Unlock mutex");
 		}
 	}
 }
