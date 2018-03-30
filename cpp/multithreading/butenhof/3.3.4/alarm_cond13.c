@@ -41,12 +41,12 @@ void alarm_insert(alarm_t* sttAlarm) { // Insert alarm entry on list, in order. 
 #endif	
 	if (mdtmCurrent_alarm == 0 || sttAlarm->time < mdtmCurrent_alarm) { //48-53: If current_alarm(the time of the next alarm expiration) is 0. then the alarm_thread is not aware of any outstanding alarm requests, and is waiting for new work. If current_alarm has a time greater than the expiration time of the new alarm, then alarm_thread is not planning to look for new work soon enough to handle the new alarm. In either case, signal the alarm_cond condition variable so that alarm_thread will wake up and process the new alarm. //Wake the alarm thread if it is not busy(that is, if current_alarm is 0, signifying that it's waiting for work), or if the new alarm comes before the one on which the alarm thread is waiting.
 		mdtmCurrent_alarm = sttAlarm->time;
-		intStatus = pthread_cond_signal(&msttAlarm_cond); if (intStatus != 0) err_abort(intStatus, "Signal cond");
+		intStatus = pthread_cond_signal/*3*/(&msttAlarm_cond); if (intStatus != 0) err_abort(intStatus, "Signal cond");
 	} //53
 }
 
 void* alarm_thread(void* arg) { // The alarm thread's start routine. //Part 3 shows the alarm_thread function, the start function for the "alarm server" thread. The general structure of alarm_thread is very much like the alarm_thread in alarm_mutex.c. The differences are due to the addition of the condition variable.
-	alarm_t* sttAlarm;
+	alarm_t* alarm;
 	struct timespec cond_time;
 	time_t now;
 	int intStatus, expired;
@@ -55,21 +55,20 @@ void* alarm_thread(void* arg) { // The alarm thread's start routine. //Part 3 sh
 	while (1) {
 		mdtmCurrent_alarm = 0; //26 //26-31 If the alarm_list is empty, alarm_mutex.c could do nothing but sleep anyway, so that main would be able to process a new command. The result was that it could not see a new alarm request for at least a full second. Now, alarm_thread instead waits on the alarm_cond condition variable, with no timeout. It will "sleep" until you enter a new alarm command, and then main will be able to awaken it immediately. Setting current_alarm to 0 tells main that alarm_thread is idle. Remember that pthread_cond_wait unlocks the mutex before waiting, and relocks the mutex before returning to the caller. //If the alarm list is empty, wait until an alarm is added. Setting current_alarm to 0 informs the insert routine that the thread is not busy.
 		while (msttAlarm_list == NULL) {
-//SUSPENDED: timespec_get @ http://en.cppreference.com/w/c/chrono/timespec_get
-			intStatus = pthread_cond_wait(&msttAlarm_cond, &msttAlarm_mutex); if (intStatus != 0) err_abort(intStatus, "Wait on cond"); printf("\nalarm_thread: On pthread_cond_wait\n");
+			intStatus = pthread_cond_wait(&msttAlarm_cond, &msttAlarm_mutex); if (intStatus != 0) err_abort(intStatus, "Wait on cond");
 		} //31
-		sttAlarm = msttAlarm_list;
-		msttAlarm_list = sttAlarm->link;
+		alarm = msttAlarm_list;
+		msttAlarm_list = alarm->link;
 		now = time(NULL);
 		expired = 0; //35 The new variable expired is initialized to 0; it will be set to 1 later if the timed condition wait expires. This makes it a little easier to decide whether to print the current alarm's message at the bottom of the loop.
-		if (sttAlarm->time > now) { //36-42 If the alarm we've just removed from the list hasn't already expired, then we need to wait for it. Because we're using a timed condition wait, which requires a POSIX.1b struct timespec, rather than the simple integer time required by sleep, we convert the expiration time. This is easy, because a struct timespec has two members—tv_sec is the number of seconds since the Epoch, which is exactly what we already have from the time function, and tv_nsec is an additional count of nanoseconds. We will just set tv_nsec to 0, since we have no need of the greater resolution.
+		if (alarm->time > now) { //36-42 If the alarm we've just removed from the list hasn't already expired, then we need to wait for it. Because we're using a timed condition wait, which requires a POSIX.1b struct timespec, rather than the simple integer time required by sleep, we convert the expiration time. This is easy, because a struct timespec has two members—tv_sec is the number of seconds since the Epoch, which is exactly what we already have from the time function, and tv_nsec is an additional count of nanoseconds. We will just set tv_nsec to 0, since we have no need of the greater resolution.
 #ifdef DEBUG
-			printf("[waiting: %d(%d)\"%s\"]\n", sttAlarm->time, sttAlarm->time - time(NULL), sttAlarm->message);
+			printf("[waiting: %d(%d)\"%s\"]\n", alarm->time, alarm->time - time(NULL), alarm->message);
 #endif
-			cond_time.tv_sec = sttAlarm->time;
+			cond_time.tv_sec = alarm->time;
 			cond_time.tv_nsec = 0; //42
-			mdtmCurrent_alarm = sttAlarm->time; //43 Record the expiration time in the current_alarm variable so that main can determine whether to signal alarm_cond when a new alarm is added.
-			while (mdtmCurrent_alarm == sttAlarm->time) { //44-53 Wait until either the current alarm has expired, or main requests that alarm_ thread look for a new, earlier alarm. Notice that the predicate test is split here, for convenience. The expression in the while statement is only half the predicate, detecting that main has changed current_alarm by inserting an earlier timer. When the timed wait returns ETIMEDOUT, indicating that the current alarm has expired, we exit the while loop with a break statement at line 49.
+			mdtmCurrent_alarm = alarm->time; //43 Record the expiration time in the current_alarm variable so that main can determine whether to signal alarm_cond when a new alarm is added.
+			while (mdtmCurrent_alarm == alarm->time) { //44-53 Wait until either the current alarm has expired, or main requests that alarm_ thread look for a new, earlier alarm. Notice that the predicate test is split here, for convenience. The expression in the while statement is only half the predicate, detecting that main has changed current_alarm by inserting an earlier timer. When the timed wait returns ETIMEDOUT, indicating that the current alarm has expired, we exit the while loop with a break statement at line 49.
 				intStatus = pthread_cond_timedwait(&msttAlarm_cond, &msttAlarm_mutex, &cond_time);
 				if (intStatus == ETIMEDOUT) {
 					expired = 1;
@@ -78,12 +77,12 @@ void* alarm_thread(void* arg) { // The alarm thread's start routine. //Part 3 sh
 				if (intStatus != 0) err_abort(intStatus, "Cond timedwait");
 			} //53
 			if (!expired) //54-55 If the while loop exited when the current alarm had not expired, main must have asked alarm_thread to process an earlier alarm. Make sure the current alarm isn't lost by reinserting it onto the list.
-				alarm_insert(sttAlarm); //55
+				alarm_insert(alarm); //55
 		} else
 			expired = 1; //57 If we remove from alarm_list an alarm that has already expired, just set the expired variable to 1 to ensure that the message is printed.
 		if (expired) {
-			printf("(%d) %s\n", sttAlarm->seconds, sttAlarm->message);
-			free(sttAlarm);
+			printf("(%d) %s\n", alarm->seconds, alarm->message);
+			free(alarm);
 		}
 	}
 }
