@@ -34,7 +34,7 @@ void alarm_insert(alarm_t* alarm) { // Insert alarm entry on list, in order. //P
 		alarm->link = NULL;
 	}
 #ifdef DEBUG
-	printf("[list: ");
+	tprintf("[list: ");
 	for(next = alarm_list; next != NULL; next = next->link)
 		printf("%d(%d)[\"%s\"] ", next->time, next->time - time(NULL), next->message);
 	printf("]\n");
@@ -55,7 +55,7 @@ void* alarm_thread(void* arg) { // The alarm thread's start routine. //Part 3 sh
 	while (1) {
 		current_alarm = 0; //26 //26-31 If the alarm_list is empty, alarm_mutex.c could do nothing but sleep anyway, so that main would be able to process a new command. The result was that it could not see a new alarm request for at least a full second. Now, alarm_thread instead waits on the alarm_cond condition variable, with no timeout. It will "sleep" until you enter a new alarm command, and then main will be able to awaken it immediately. Setting current_alarm to 0 tells main that alarm_thread is idle. Remember that pthread_cond_wait unlocks the mutex before waiting, and relocks the mutex before returning to the caller. //If the alarm list is empty, wait until an alarm is added. Setting current_alarm to 0 informs the insert routine that the thread is not busy.
 		while (alarm_list == NULL) {
-			status = pthread_cond_wait(&alarm_cond, &alarm_mutex); if (status != 0) err_abort(status, "Wait on cond");
+			status = pthread_cond_wait/*1*/(&alarm_cond, &alarm_mutex); if (status != 0) err_abort(status, "Wait on cond");
 		} //31
 		alarm = alarm_list;
 		alarm_list = alarm->link;
