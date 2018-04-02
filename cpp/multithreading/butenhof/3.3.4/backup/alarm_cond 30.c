@@ -30,8 +30,8 @@ void alarm_insert(alarm_t* sttAlarm) { // Insert alarm entry on list, in order. 
 	sttNext = *sttLast;
 	while (sttNext != NULL) {
 		if (sttNext->time >= sttAlarm->time) {
-			sttAlarm->link = sttNext;/*5*//*(3 sec)->link = 10 sec*/
-			*sttLast = sttAlarm; /////////////
+			sttAlarm->link = sttNext;
+			*sttLast = sttAlarm;
 			break;
 		}
 		sttLast = &sttNext->link;
@@ -66,7 +66,7 @@ void* alarm_thread(void* arg) { // The alarm thread's start routine. //Part 3 sh
 			intStatus = pthread_cond_wait(&msttAlarm_cond, &msttAlarm_mutex); if (intStatus != 0) err_abort(intStatus, "Wait on cond"); //printTimespec(); printf( "alarm_thread 222: (msttAlarm_list == NULL) = %s\n", ((msttAlarm_list == NULL) ? "true" : "false") );
 		} //31
 		sttAlarm = msttAlarm_list;
-		msttAlarm_list = sttAlarm->link;/*1*//*10 sec*/
+		msttAlarm_list = sttAlarm->link;/*2*//*10 sec*/
 		dtmNow = time(NULL);
 		intExpired = 0; //35 The new variable expired is initialized to 0; it will be set to 1 later if the timed condition wait expires. This makes it a little easier to decide whether to print the current alarm's message at the bottom of the loop.
 		if (sttAlarm->time > dtmNow) { //36-42 If the alarm we've just removed from the list hasn't already expired, then we need to wait for it. Because we're using a timed condition wait, which requires a POSIX.1b struct timespec, rather than the simple integer time required by sleep, we convert the expiration time. This is easy, because a struct timespec has two members—tv_sec is the number of seconds since the Epoch, which is exactly what we already have from the time function, and tv_nsec is an additional count of nanoseconds. We will just set tv_nsec to 0, since we have no need of the greater resolution.
@@ -75,9 +75,9 @@ void* alarm_thread(void* arg) { // The alarm thread's start routine. //Part 3 sh
 #endif
 			sttCond_time.tv_sec = sttAlarm->time;
 			sttCond_time.tv_nsec = 0; //42
-			mdtmCurrent_alarm = sttAlarm->time;/*2*//*5 sec*/ //43 Record the expiration time in the current_alarm variable so that main can determine whether to signal alarm_cond when a new alarm is added.
+			mdtmCurrent_alarm = sttAlarm->time;/*3*//*5 sec*/ //43 Record the expiration time in the current_alarm variable so that main can determine whether to signal alarm_cond when a new alarm is added.
 			while (mdtmCurrent_alarm == sttAlarm->time) { //44-53 Wait until either the current alarm has expired, or main requests that alarm_ thread look for a new, earlier alarm. Notice that the predicate test is split here, for convenience. The expression in the while statement is only half the predicate, detecting that main has changed current_alarm by inserting an earlier timer. When the timed wait returns ETIMEDOUT, indicating that the current alarm has expired, we exit the while loop with a break statement at line 49.
-				intStatus = pthread_cond_timedwait(&msttAlarm_cond, &msttAlarm_mutex, &sttCond_time);/*3*//*5 sec*/
+				intStatus = pthread_cond_timedwait(&msttAlarm_cond, &msttAlarm_mutex, &sttCond_time);/*4*//*5 sec*/ /////////////
 				if (intStatus == ETIMEDOUT) {
 					intExpired = 1;
 					break;
@@ -103,7 +103,7 @@ int main(int argc, char* argv[]) { //Part 4 shows the final section of alarm_con
 
 	intStatus = pthread_create(&lngThread, NULL, alarm_thread, NULL); if (intStatus != 0) err_abort(intStatus, "Create alarm thread");
 	while (1) {
-		printf("Alarm> ");
+		printf("Alarm> ");/*1*/
 		if (fgets(line, sizeof(line), stdin) == NULL) exit(0);
 		if (strlen(line) <= 1) continue;
 		sttAlarm = (alarm_t*)malloc(sizeof(alarm_t)); if (sttAlarm == NULL) errno_abort("Allocate alarm");
@@ -111,7 +111,7 @@ int main(int argc, char* argv[]) { //Part 4 shows the final section of alarm_con
 		} else {
 			intStatus = pthread_mutex_lock(&msttAlarm_mutex); if (intStatus != 0) err_abort(intStatus, "Lock mutex");
 			sttAlarm->time = time(NULL) + sttAlarm->seconds;
-			alarm_insert(sttAlarm);/*4*//*3 sec*/ //38 Because the condition variable signal operation is built into the new alarm_insert function, we call alarm_insert rather than inserting a new alarm directly. //Insert the new alarm into the list of alarms, sorted by expiration time.
+			alarm_insert(sttAlarm); //38 Because the condition variable signal operation is built into the new alarm_insert function, we call alarm_insert rather than inserting a new alarm directly. //Insert the new alarm into the list of alarms, sorted by expiration time.
 			intStatus = pthread_mutex_unlock(&msttAlarm_mutex); if (intStatus != 0) err_abort(intStatus, "Unlock mutex");
 		}
 	}
