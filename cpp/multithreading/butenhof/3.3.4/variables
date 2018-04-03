@@ -1,0 +1,13 @@
+31		while (sttNext != NULL) {
+5: sttNext = (alarm_t *) 0x0
+6: sttNext.seconds = <error: Cannot access memory at address 0x8>
+7: sttAlarm = (alarm_t *) 0x603a10
+8: sttAlarm.seconds = 1000000
+12: sttLast = (alarm_t **) 0x6021b0 <msttAlarm_list>
+13: (*sttLast) = (alarm_t *) 0x0
+14: (*sttLast).seconds = <error: Cannot access memory at address 0x8>
+15: &msttAlarm_list = (alarm_t **) 0x6021b0 <msttAlarm_list>
+16: msttAlarm_list = (alarm_t *) 0x0
+17: msttAlarm_list.seconds = <error: Cannot access memory at address 0x8>
+18: msttAlarm_list.link = <error: Cannot access memory at address 0x0>
+19: msttAlarm_list.link.seconds = <error: Cannot access memory at address 0x0>

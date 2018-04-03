@@ -30,15 +30,15 @@ void alarm_insert(alarm_t* sttAlarm) { // Insert alarm entry on list, in order. 
 	sttNext = *sttLast;
 	while (sttNext != NULL) {
 		if (sttNext->time >= sttAlarm->time) {
-			sttAlarm->link = sttNext;
-			*sttLast = sttAlarm;
+			sttAlarm->link = sttNext;/*3*/ /*(5 sec)->link = 10 sec*/
+			*sttLast = sttAlarm; //////////// /*msttAlarm_list.seconds = 3*/
 			break;
 		}
 		sttLast = &sttNext->link;
 		sttNext = sttNext->link;
 	}
 	if (sttNext == NULL) { //If we reached the end of the list, insert the new alarm there.("next" is NULL, and "last" points to the link field of the last item, or to the list header.)
-		*sttLast = sttAlarm;/*1*//*msttAlarm_list.seconds = 10*/
+		*sttLast = sttAlarm;
 		sttAlarm->link = NULL;
 	}
 #ifdef DEBUG
@@ -48,7 +48,7 @@ void alarm_insert(alarm_t* sttAlarm) { // Insert alarm entry on list, in order. 
 	printf("]\n");
 #endif	
 	if (mdtmCurrent_alarm == 0 || sttAlarm->time < mdtmCurrent_alarm) { //48-53: If current_alarm(the time of the next alarm expiration) is 0. then the alarm_thread is not aware of any outstanding alarm requests, and is waiting for new work. If current_alarm has a time greater than the expiration time of the new alarm, then alarm_thread is not planning to look for new work soon enough to handle the new alarm. In either case, signal the alarm_cond condition variable so that alarm_thread will wake up and process the new alarm. //Wake the alarm thread if it is not busy(that is, if current_alarm is 0, signifying that it's waiting for work), or if the new alarm comes before the one on which the alarm thread is waiting.
-		mdtmCurrent_alarm = sttAlarm->time;
+		mdtmCurrent_alarm = sttAlarm->time; /*1*//*3 sec*/
 		intStatus = pthread_cond_signal(&msttAlarm_cond); if (intStatus != 0) err_abort(intStatus, "Signal cond");
 	} //53
 }
@@ -85,7 +85,7 @@ void* alarm_thread(void* arg) { // The alarm thread's start routine. //Part 3 sh
 				if (intStatus != 0) err_abort(intStatus, "Cond timedwait");
 			} //53
 			if (!intExpired) //54-55 If the while loop exited when the current alarm had not expired, main must have asked alarm_thread to process an earlier alarm. Make sure the current alarm isn't lost by reinserting it onto the list.
-				alarm_insert(sttAlarm); //55
+				alarm_insert(sttAlarm);/*2*//*5 sec*/ //55
 		} else
 			intExpired = 1; //57 If we remove from alarm_list an alarm that has already expired, just set the expired variable to 1 to ensure that the message is printed.
 		if (intExpired) {
