@@ -29,7 +29,7 @@ void alarm_insert(alarm_t* sttAlarm) { // Insert alarm entry on list, in order. 
 	sttLast = &msttAlarm_list; //LOCKING PROTOCOL: This routine requires that the caller have locked the alarm_mutex! //9-14 I have recommended that mutex locking protocols be documented, and here is an example: The alarm_insert function points out explicitly that it must be called with the alarm_mutex locked.
 	sttNext = *sttLast;
 	while (sttNext != NULL) {
-		if (sttNext->time >= sttAlarm->time) {
+		if (sttNext->time >= sttAlarm->time) { ////////////
 			sttAlarm->link = sttNext;/*1*//*(3 sec)->link = 10 sec*/
 			*sttLast = sttAlarm; /*2*//*msttAlarm_list.seconds = 3*/
 			break;
@@ -85,7 +85,7 @@ void* alarm_thread(void* arg) { // The alarm thread's start routine. //Part 3 sh
 				if (intStatus != 0) err_abort(intStatus, "Cond timedwait");
 			} //53
 			if (!intExpired) //54-55 If the while loop exited when the current alarm had not expired, main must have asked alarm_thread to process an earlier alarm. Make sure the current alarm isn't lost by reinserting it onto the list.
-				alarm_insert(sttAlarm);/*4*//*5 sec*/ //SUSPENDED //55
+				alarm_insert(sttAlarm);/*4*//*5 sec*/ //55
 		} else
 			intExpired = 1; //57 If we remove from alarm_list an alarm that has already expired, just set the expired variable to 1 to ensure that the message is printed.
 		if (intExpired) {
