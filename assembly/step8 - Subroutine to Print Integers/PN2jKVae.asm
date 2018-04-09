@@ -9,17 +9,16 @@ section .text
 	global _start
 
 _start:
-
 	mov rax, 123					;Print this number.
 	call _printRAX
 
-	mov rax, 60
+	mov rax, 60						;Exit.
 	mov rdi, 0
 	syscall
 
 
 _printRAX:
-	mov rcx, digitSpace				;We start at the beginning of digitSpace and increment the position below (inc rcx).
+	mov rcx, digitSpace				;digitSpace will store the string to print out. We start at the beginning of digitSpace and increment the position below (inc rcx).
 	mov rbx, 10						;Break down the number backwards, so put the end-line character (10) to the beginning of the digit string stored in rbx.
 	mov [rcx], rbx
 	inc rcx							;Increment the position in digitSpace.
@@ -33,7 +32,7 @@ _printRAXLoop:
 	push rax						;Store the quotient on the stack.
 	add rdx, 48						;Convert remainder 3 to a character by adding ASCII code 48 (0 character).
 
-	mov rcx, [digitSpacePos]
+	mov rcx, [digitSpacePos]		;I did not understand why digitSpacePos but not digitSpace is put to rcx...
 	mov [rcx], dl
 	inc rcx
 	mov [digitSpacePos], rcx
