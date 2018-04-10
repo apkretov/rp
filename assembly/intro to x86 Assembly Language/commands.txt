@@ -1,0 +1,3 @@
+nasm ex1.asm -f elf32 -o ex1.o		Compilation. elf is an executable linking format 32.
+ld ex1.o -m elf_i386 -o ex1		Linking.
+echo $?					Ispect the exit status.
