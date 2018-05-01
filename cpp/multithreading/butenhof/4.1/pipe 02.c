@@ -63,13 +63,13 @@ void* pipe_stage(void* arg) {
 } //Notice that the routine never unlocks the stage->mutex. The call to pthread_cond_wait implicitly unlocks the mutex while the thread is waiting, allowing other threads to make progress. Because the loop never terminates, this function has no need to unlock the mutex explicitly.
   //Waiting on a condition variable atomically releases the associated mutex and waits until another thread signals the condition variable. The mutex must always be locked when you wait on a condition variable and, when a thread wakes up from a condition variable wait, it always resumes with the mutex locked. @ 3.3 Condition variables
 
-int pipe_create(pipe_t* sttPipe, int stages) { //Part 4 shows pipe_create, the function that creates a pipeline. It can create a pipeline of any number of stages, linking them together in a list.			//External interface to create a pipeline. All the data is initialized and the threads created. They'll wait for data.
+int pipe_create(pipe_t* pipe, int stages) { //Part 4 shows pipe_create, the function that creates a pipeline. It can create a pipeline of any number of stages, linking them together in a list.			//External interface to create a pipeline. All the data is initialized and the threads created. They'll wait for data.
 	int pipe_index;
-	stage_t **link = &sttPipe->head, *new_stage, *stage;
+	stage_t **link = &pipe->head, *new_stage, *stage;
 	int status;
-	status = pthread_mutex_init(&sttPipe->mutex, NULL); if (status != 0)	err_abort(status, "Init pipe mutex");
-	sttPipe->stages = stages;
-	sttPipe->active = 0;
+	status = pthread_mutex_init(&pipe->mutex, NULL); if (status != 0)	err_abort(status, "Init pipe mutex");
+	pipe->stages = stages;
+	pipe->active = 0;
 
 	for (pipe_index = 0; pipe_index <= stages; pipe_index++) { 	//18-34 For each stage, it allocates a new stage_t structure and initializes the members. Notice that one additional "stage" is allocated and initialized to hold the final result of the pipeline.
 		new_stage = (stage_t*)malloc(sizeof(stage_t)); if (new_stage == NULL) errno_abort("Allocate stage");
@@ -82,9 +82,9 @@ int pipe_create(pipe_t* sttPipe, int stages) { //Part 4 shows pipe_create, the f
 	} //34
 
 	*link = (stage_t*)NULL; //Terminate list  //36-37 The link member of the final stage is set to NULL to terminate the list, and the pipeline's tail is set to point at the final stage. The tail pointer allows pipe_result to easily find the final product of the pipeline, which is stored into the final stage.
-	sttPipe->tail = new_stage; //Record the tail //37
+	pipe->tail = new_stage; //Record the tail //37
 
-	for (stage = sttPipe->head; stage->next != NULL; stage = stage->next) { //52-59 After all the stage data is initialized, pipe_create creates a thread for each stage. The extra "final stage" does not get a thread—the termination condition of the for loop is that the current stage's next link is not NULL, which means that it will not process the final stage.			//Create the threads for the pipe stages only after all the data is initialized(including all links). Note that the last stage doesn't get a thread, it's just a receptacle for the final pipeline value. At this point, proper cleanup on an error would take up more space than worthwhile in a "simple example," so instead of cancelling and detaching all the threads already created, plus the synchronization object and memory cleanup done for earlier errors, it will simply abort.
+	for (stage = pipe->head; stage->next != NULL; stage = stage->next) { //52-59 After all the stage data is initialized, pipe_create creates a thread for each stage. The extra "final stage" does not get a thread—the termination condition of the for loop is that the current stage's next link is not NULL, which means that it will not process the final stage.			//Create the threads for the pipe stages only after all the data is initialized(including all links). Note that the last stage doesn't get a thread, it's just a receptacle for the final pipeline value. At this point, proper cleanup on an error would take up more space than worthwhile in a "simple example," so instead of cancelling and detaching all the threads already created, plus the synchronization object and memory cleanup done for earlier errors, it will simply abort.
 		status = pthread_create(&stage->thread, NULL, pipe_stage, (void*)stage); if (status != 0)	err_abort(status, "Create pipe stage");
 	} //59
 	return 0;
@@ -134,25 +134,26 @@ int pipe_result(pipe_t* pipe, long *result) { //23-47 The pipe_result function f
 //Part 6 shows the main program that drives the pipeline. It creates a pipeline, and then loops reading lines from stdin. If the line is a single "=" character, it pulls a result from the pipeline and prints it. Otherwise, it converts the line to an integer value, which it feeds into the pipeline.
 int main(int argc, char* argv[]) { //The main program to "drive" the pipeline...
 	pipe_t sttMyPipe;
-	long lngValue, lngResult;
-	char chrLine[128];
+	long value, result;
+	int status;
+	char line[128];
 
 	pipe_create(&sttMyPipe, 10);
 	printf("Enter integer values, or \"=\" for next result\n");
 	while (1) {
 		printf("Data> ");
-		if (fgets(chrLine, sizeof(chrLine), stdin) == NULL) exit(0);
-		if (strlen(chrLine) <= 1) continue;
-		if (strlen(chrLine) <= 2 && chrLine[0] == '=') {
-			if (pipe_result(&sttMyPipe, &lngResult))
-				printf("Result is %ld\n", lngResult);
+		if (fgets(line, sizeof(line), stdin) == NULL) exit(0);
+		if (strlen(line) <= 1) continue;
+		if (strlen(line) <= 2 && line[0] == '=') {
+			if (pipe_result(&sttMyPipe, &result))
+				printf("Result is %ld\n", result);
 			else
 				printf("Pipe is empty\n");
 		} else {
-			if (sscanf(chrLine, "%ld", &lngValue) < 1)
-				fprintf(stderr, "Enter an integer lngValue\n");
+			if (sscanf(line, "%ld", &value) < 1)
+				fprintf(stderr, "Enter an integer value\n");
 			else
-				pipe_start(&sttMyPipe, lngValue);
+				pipe_start(&sttMyPipe, value);
 		}
 	}
 }
