@@ -3,8 +3,8 @@
 
 typedef struct stage_tag {	//9						//9-17 Each stage of a pipeline is represented by a variable of type stage_t.			//Internal structure describing a "stage" in the pipeline. One for each thread, plus a "result stage" where the final thread can stash the value.
 	pthread_mutex_t mutex;	//Protect data			//9-17 stage_t contains a mutex to synchronize access to the stage (???).
-	pthread_cond_t condAvail;	//Data available		//9-17 The avail condition variable is used to signal a stage that data is ready for it to process,
-	pthread_cond_t condReady;	//Ready for data		//9-17 and each stage signals its own ready condition variable when it is ready for new data.
+	pthread_cond_t avail;	//Data available		//9-17 The avail condition variable is used to signal a stage that data is ready for it to process,
+	pthread_cond_t ready;	//Ready for data		//9-17 and each stage signals its own ready condition variable when it is ready for new data.
 	int data_ready;			//Data present
 	long data;					//Data to process		//9-17 The data member is the data passed from the previous stage,
 	pthread_t thread;			//Thread for stage	//9-17 thread is the thread operating this stage,
@@ -26,7 +26,7 @@ int pipe_send(stage_t* stage, long data) { //Part 2 shows pipe_send, a utility f
 	if (intStatus != 0)
 		return intStatus;
 	while (stage->data_ready) { //17-23 It begins by waiting on the specified pipeline stage's ready condition variable until it can accept new data.			//If there's data in the pipe stage, wait for it to be consumed.
-		intStatus = pthread_cond_wait(&stage->condReady, &stage->mutex);
+		intStatus = pthread_cond_wait(&stage->ready, &stage->mutex);
 		if (intStatus != 0) {
 			pthread_mutex_unlock(&stage->mutex);
 			return intStatus;
@@ -34,7 +34,7 @@ int pipe_send(stage_t* stage, long data) { //Part 2 shows pipe_send, a utility f
 	} //23
 	stage->data = data; //28-30 Store the new data value, and then tell the stage that data is available.				//Send the new data
 	stage->data_ready = 1;
-	intStatus = pthread_cond_signal(&stage->condAvail); //30
+	intStatus = pthread_cond_signal(&stage->avail); //30
 	if (intStatus != 0) {
 		pthread_mutex_unlock(&stage->mutex);
 		return intStatus;
@@ -54,26 +54,27 @@ void* pipe_stage(void* arg) {
 	intStatus = pthread_mutex_lock(&stage->mutex); if (intStatus != 0) err_abort(intStatus, "Lock pipe stage");
 	while (1) { //16-27 The thread loops forever, processing data. Because the mutex is locked outside the loop, the thread appears to have the pipeline stage's mutex locked all the time. However, it spends most of its time waiting for new data, on the avail condition variable. Remember that a thread automatically unlocks the mutex associated with a condition variable, while waiting on that condition variable. In reality, therefore, the thread spends most of its time with mutex unlocked.
 		while (stage->data_ready != 1) {
-			intStatus = pthread_cond_wait(&stage->condAvail, &stage->mutex); if (intStatus != 0)	err_abort(intStatus, "Wait for previous stage"); //A condition variable wait always returns with the mutex locked. @ 1. 3.3 Condition variables.
+			intStatus = pthread_cond_wait(&stage->avail, &stage->mutex); if (intStatus != 0)	err_abort(intStatus, "Wait for previous stage"); //A condition variable wait always returns with the mutex locked. @ 1. 3.3 Condition variables.
 		}
 		pipe_send(next_stage, stage->data + 1); //22-26 When given data, the thread increases its own data value by one, and passes the result to the next stage. The thread then records that the stage no longer has data by clearing the data_ready flag, and signals the ready condition variable to wake any thread that might be waiting for this pipeline stage.
 		stage->data_ready = 0;
-		intStatus = pthread_cond_signal(&stage->condReady);	if (intStatus != 0) err_abort(intStatus, "Wake next stage"); //26
+		intStatus = pthread_cond_signal(&stage->ready);	if (intStatus != 0) err_abort(intStatus, "Wake next stage"); //26
 	} //27
 } //Notice that the routine never unlocks the stage->mutex. The call to pthread_cond_wait implicitly unlocks the mutex while the thread is waiting, allowing other threads to make progress. Because the loop never terminates, this function has no need to unlock the mutex explicitly.
   //Waiting on a condition variable atomically releases the associated mutex and waits until another thread signals the condition variable. The mutex must always be locked when you wait on a condition variable and, when a thread wakes up from a condition variable wait, it always resumes with the mutex locked. @ 3.3 Condition variables
 
-int pipe_create(pipe_t* sttPipe, unsigned intStages) { //Part 4 shows pipe_create, the function that creates a pipeline. It can create a pipeline of any number of stages, linking them together in a list.			//External interface to create a pipeline. All the data is initialized and the threads created. They'll wait for data.
+int pipe_create(pipe_t* sttPipe, /*ORIG int*/unsigned intStages) { //Part 4 shows pipe_create, the function that creates a pipeline. It can create a pipeline of any number of stages, linking them together in a list.			//External interface to create a pipeline. All the data is initialized and the threads created. They'll wait for data.
+	//ORIG int intPipeIndex;
 	stage_t **sttLink = &sttPipe->head, *sttNewStage, *sttStage;
 	int intStatus;
 	intStatus = pthread_mutex_init(&sttPipe->mutex, NULL); if (intStatus != 0)	err_abort(intStatus, "Init pipe mutex");
 	sttPipe->stages = intStages;
 	sttPipe->active = 0;
-	for (unsigned intPipeIndex = 0; intPipeIndex <= intStages; intPipeIndex++) { 	//18-34 For each stage, it allocates a new stage_t structure and initializes the members. Notice that one additional "stage" is allocated and initialized to hold the final result of the pipeline.
+	for (/*TEST*/unsigned intPipeIndex = 0; intPipeIndex <= intStages; intPipeIndex++) { 	//18-34 For each stage, it allocates a new stage_t structure and initializes the members. Notice that one additional "stage" is allocated and initialized to hold the final result of the pipeline.
 		sttNewStage = (stage_t*)malloc(sizeof(stage_t)); if (sttNewStage == NULL) errno_abort("Allocate stage");
 		intStatus = pthread_mutex_init(&sttNewStage->mutex, NULL); if (intStatus != 0) err_abort(intStatus, "Init stage mutex");
-		intStatus = pthread_cond_init(&sttNewStage->condAvail, NULL); if (intStatus != 0) err_abort(intStatus, "Init avail condition");
-		intStatus = pthread_cond_init(&sttNewStage->condReady, NULL); if (intStatus != 0) err_abort(intStatus, "Init ready condition");
+		intStatus = pthread_cond_init(&sttNewStage->avail, NULL); if (intStatus != 0) err_abort(intStatus, "Init avail condition");
+		intStatus = pthread_cond_init(&sttNewStage->ready, NULL); if (intStatus != 0) err_abort(intStatus, "Init ready condition");
 		sttNewStage->data_ready = 0;
 		*sttLink = sttNewStage;
 		sttLink = &sttNewStage->next;
@@ -118,10 +119,10 @@ int pipe_result(pipe_t* pipe, long *result) { //23-47 The pipe_result function f
 
 	pthread_mutex_lock(&tail->mutex); //48-55 If there is another item in the pipeline, pipe_result locks the tail(final) stage, and waits for it to receive data. It copies the data and then resets the stage so it can receive the next item of data. Remember that the final stage does not have a thread, and cannot reset itself.
 	while (!tail->data_ready)
-		pthread_cond_wait(&tail->condAvail, &tail->mutex);
+		pthread_cond_wait(&tail->avail, &tail->mutex);
 	*result = tail->data;
 	tail->data_ready = 0;
-	pthread_cond_signal(&tail->condReady);
+	pthread_cond_signal(&tail->ready);
 	pthread_mutex_unlock(&tail->mutex); //55
 
 	return 1;
