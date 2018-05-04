@@ -44,9 +44,7 @@ int pipe_send(stage_t* stage, long data) { //Part 2 shows pipe_send, a utility f
 	return intStatus;
 }
 
-//Part 3 shows pipe_stage, the start function for each thread in the pipeline. The thread's argument is a pointer to its stage_t structure.
-//The thread start routine for pipe stage threads. Each will wait for a data item passed from the caller or the previous stage, modify the data and pass it along to the next (or final) stage.
-void* pipe_stage(void* arg) {
+void* pipe_stage(void* arg) { //Part 3 shows pipe_stage, the start function for each thread in the pipeline. The thread's argument is a pointer to its stage_t structure.		//The thread start routine for pipe stage threads. Each will wait for a data item passed from the caller or the previous stage, modify the data and pass it along to the next (or final) stage.
 	stage_t* stage = (stage_t*)arg;
 	stage_t* next_stage = stage->next;
 	int intStatus;
@@ -59,9 +57,8 @@ void* pipe_stage(void* arg) {
 		pipe_send(next_stage, stage->data + 1); //22-26 When given data, the thread increases its own data value by one, and passes the result to the next stage. The thread then records that the stage no longer has data by clearing the dataReady flag, and signals the ready condition variable to wake any thread that might be waiting for this pipeline stage.
 		stage->dataReady = 0;
 		intStatus = pthread_cond_signal(&stage->condReady);	if (intStatus != 0) err_abort(intStatus, "Wake next stage"); //26
-	} //27
-} //Notice that the routine never unlocks the stage->mutex. The call to pthread_cond_wait implicitly unlocks the mutex while the thread is waiting, allowing other threads to make progress. Because the loop never terminates, this function has no need to unlock the mutex explicitly.
-  //Waiting on a condition variable atomically releases the associated mutex and waits until another thread signals the condition variable. The mutex must always be locked when you wait on a condition variable and, when a thread wakes up from a condition variable wait, it always resumes with the mutex locked. @ 3.3 Condition variables
+	} //27 //Notice that the routine never unlocks the stage->mutex. The call to pthread_cond_wait implicitly unlocks the mutex while the thread is waiting, allowing other threads to make progress. Because the loop never terminates, this function has no need to unlock the mutex explicitly.			//Waiting on a condition variable atomically releases the associated mutex and waits until another thread signals the condition variable. The mutex must always be locked when you wait on a condition variable and, when a thread wakes up from a condition variable wait, it always resumes with the mutex locked. @ 3.3 Condition variables
+}
 
 int pipe_create(pipe_t* sttPipe, unsigned intStages) { //Part 4 shows pipe_create, the function that creates a pipeline. It can create a pipeline of any number of stages, linking them together in a list.			//External interface to create a pipeline. All the data is initialized and the threads created. They'll wait for data.
 	stage_t **sttLink = &sttPipe->head, *sttNewStage, *sttStage;
@@ -86,9 +83,7 @@ int pipe_create(pipe_t* sttPipe, unsigned intStages) { //Part 4 shows pipe_creat
 	return 0;
 }
 
-//Part 5 shows pipe_start and pipe_result. The pipe_start function pushes an item of data into the beginning of the pipeline and then returns immediately without waiting for a result. The pipe_result function allows the caller to wait for the final result, whenever the result might be needed.
-//External interface to start a pipeline by passing data to the first stage. The routine returns while the pipeline processes in parallel. Call the pipe_result return to collect the final stage values(note that the pipe will stall when each stage fills, until the result is collected).
-int pipe_start(pipe_t* pipe, long value) {
+int pipe_start(pipe_t* pipe, long value) { //Part 5 shows pipe_start and pipe_result. The pipe_start function pushes an item of data into the beginning of the pipeline and then returns immediately without waiting for a result. The pipe_result function allows the caller to wait for the final result, whenever the result might be needed.		//External interface to start a pipeline by passing data to the first stage. The routine returns while the pipeline processes in parallel. Call the pipe_result return to collect the final stage values(note that the pipe will stall when each stage fills, until the result is collected).
 	int intStatus;
 
 	intStatus = pthread_mutex_lock(&pipe->mutex); if (intStatus != 0)	err_abort(intStatus, "Lock pipe mutex");
@@ -96,11 +91,10 @@ int pipe_start(pipe_t* pipe, long value) {
 	intStatus = pthread_mutex_unlock(&pipe->mutex);	if (intStatus != 0) err_abort(intStatus, "Unlock pipe mutex"); //	//19-22 The pipe_start function sends data to the first stage of the pipeline. The function increments a count of "active" items in the pipeline, which allows pipe_ result to detect that there are no more active items to collect, and to return immediately instead of blocking. You would not always want a pipeline to behave this way — it makes sense for this example because a single thread alternately "feeds" and "reads" the pipeline, and the application would hang forever if the user inadvertently reads one more item than had been fed.
 
 	pipe_send(pipe->head, value);
-	return 0;
-} //22
+	return 0; //22
+}
 
-//Collect the result of the pipeline. Wait for a result if the pipeline hasn't produced one.
-int pipe_result(pipe_t* pipe, long *result) { //23-47 The pipe_result function first checks whether there is an active item in the pipeline. If not, it returns with a status of 0, after unlocking the pipeline mutex.
+int pipe_result(pipe_t* pipe, long *result) { //23-47 The pipe_result function first checks whether there is an active item in the pipeline. If not, it returns with a status of 0, after unlocking the pipeline mutex.			//Collect the result of the pipeline. Wait for a result if the pipeline hasn't produced one.
 	stage_t* tail = pipe->tail;
 	//ORIG unused: long value;
 	int empty = 0;
@@ -127,8 +121,7 @@ int pipe_result(pipe_t* pipe, long *result) { //23-47 The pipe_result function f
 	return 1;
 }
 
-//Part 6 shows the main program that drives the pipeline. It creates a pipeline, and then loops reading lines from stdin. If the line is a single "=" character, it pulls a result from the pipeline and prints it. Otherwise, it converts the line to an integer value, which it feeds into the pipeline.
-int main() { //The main program to "drive" the pipeline...
+int main() { //Part 6 shows the main program that drives the pipeline. It creates a pipeline, and then loops reading lines from stdin. If the line is a single "=" character, it pulls a result from the pipeline and prints it. Otherwise, it converts the line to an integer value, which it feeds into the pipeline.			//The main program to "drive" the pipeline...
 	const unsigned intStages = 10;
 	pipe_t sttMyPipe;
 	long lngValue, lngResult;
