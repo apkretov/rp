@@ -23,7 +23,11 @@ int pipe_send(stage_t* sttStage, long lngData) { //Part 2 shows pipe_send, a uti
 	int intStatus;
 	intStatus = pthread_mutex_lock(&sttStage->mutex); if (intStatus != 0) return intStatus;
 	while (sttStage->dataReady) { //17-23 It begins by waiting on the specified pipeline stage's ready condition variable until it can accept new data.			//If there's data in the pipe stage, wait for it to be consumed.
-		intStatus = pthread_cond_wait/*3.2*/(&sttStage->condReady, &sttStage->mutex); if (intStatus != 0) { pthread_mutex_unlock(&sttStage->mutex); return intStatus; }
+		intStatus = pthread_cond_wait(&sttStage->condReady, &sttStage->mutex);
+		if (intStatus != 0) {
+			pthread_mutex_unlock(&sttStage->mutex);
+			return intStatus;
+		}
 	} //23
 	sttStage->data = lngData; //28-30 Store the new data value, and then tell the stage that data is available.				//Send the new data
 	sttStage->dataReady = 1;
@@ -59,10 +63,10 @@ int pipe_create(pipe_t* sttPipe, unsigned intStages) { //Part 4 shows pipe_creat
 		intStatus = pthread_cond_init(&sttNewStage->condAvail, NULL); if (intStatus != 0) err_abort(intStatus, "Init avail condition");
 		intStatus = pthread_cond_init(&sttNewStage->condReady, NULL); if (intStatus != 0) err_abort(intStatus, "Init ready condition");
 		sttNewStage->dataReady = 0;
-		*sttLink = sttNewStage;/**//*The prior stage's next = sttNewStage*//**//*sttPipe->head = sttNewStage*/
-		sttLink = &sttNewStage->next;/*1*/
+		*sttLink = sttNewStage;
+		sttLink = &sttNewStage->next;
 	} //34
-	*sttLink = (stage_t*)NULL;/*2*//*The last stage's next = NULL*/ //Terminate list  //36-37 The link member of the final stage is set to NULL to terminate the list, and the pipeline's tail is set to point at the final stage. The tail pointer allows pipe_result to easily find the final product of the pipeline, which is stored into the final stage.
+	*sttLink = (stage_t*)NULL; //Terminate list  //36-37 The link member of the final stage is set to NULL to terminate the list, and the pipeline's tail is set to point at the final stage. The tail pointer allows pipe_result to easily find the final product of the pipeline, which is stored into the final stage.
 	sttPipe->tail = sttNewStage; //Record the tail //37
 	for (sttStage = sttPipe->head; sttStage->next != NULL; sttStage = sttStage->next) { //52-59 After all the stage data is initialized, pipe_create creates a thread for each stage. The extra "final stage" does not get a thread—the termination condition of the for loop is that the current stage's next link is not NULL, which means that it will not process the final stage.			//Create the threads for the pipe stages only after all the data is initialized(including all links). Note that the last stage doesn't get a thread, it's just a receptacle for the final pipeline value. At this point, proper cleanup on an error would take up more space than worthwhile in a "simple example," so instead of cancelling and detaching all the threads already created, plus the synchronization object and memory cleanup done for earlier errors, it will simply abort.
 		intStatus = pthread_create(&sttStage->thread, NULL, pipe_stage/*1.2*/, (void*)sttStage); if (intStatus != 0) err_abort(intStatus, "Create pipe stage");
@@ -84,14 +88,17 @@ int pipe_result(pipe_t* pipe, long *result) { //23-47 The pipe_result function f
 	//ORIG unused: long value;
 	int empty = 0;
 	int intStatus;
+
 	intStatus = pthread_mutex_lock(&pipe->mutex); if (intStatus != 0)	err_abort(intStatus, "Lock pipe mutex");
 	if (pipe->active <= 0)
 		empty = 1;
 	else
 		pipe->active--;
 	intStatus = pthread_mutex_unlock(&pipe->mutex);	if (intStatus != 0) err_abort(intStatus, "Unlock pipe mutex");
+
 	if (empty)
 		return 0; //47
+
 	pthread_mutex_lock(&tail->mutex); //48-55 If there is another item in the pipeline, pipe_result locks the tail(final) stage, and waits for it to receive data. It copies the data and then resets the stage so it can receive the next item of data. Remember that the final stage does not have a thread, and cannot reset itself.
 	while (!tail->dataReady)
 		pthread_cond_wait(&tail->condAvail, &tail->mutex);
