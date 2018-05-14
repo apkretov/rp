@@ -52,7 +52,7 @@ void* pipe_stage(void* vrbArg) { //Part 3 shows pipe_stage, the start function f
 }
 
 int pipe_create(pipe_t* sttPipe, unsigned intStages) { //Part 4 shows pipe_create, the function that creates a pipeline. It can create a pipeline of any number of stages, linking them together in a list.			//External interface to create a pipeline. All the data is initialized and the threads created. They'll wait for data.
-	stage_t **sttLink = &sttPipe->head, *sttNewStage, *sttStage;
+	stage_t **sttLink = &sttPipe->head/**/, *sttNewStage, *sttStage;
 	int intStatus;
 	intStatus = pthread_mutex_init(&sttPipe->mutex, NULL); if (intStatus != 0)	err_abort(intStatus, "Init pipe mutex");
 	sttPipe->stages = intStages;
@@ -63,10 +63,10 @@ int pipe_create(pipe_t* sttPipe, unsigned intStages) { //Part 4 shows pipe_creat
 		intStatus = pthread_cond_init(&sttNewStage->condAvail, NULL); if (intStatus != 0) err_abort(intStatus, "Init avail condition");
 		intStatus = pthread_cond_init(&sttNewStage->condReady, NULL); if (intStatus != 0) err_abort(intStatus, "Init ready condition");
 		sttNewStage->dataReady = 0;
-		*sttLink = sttNewStage;
-		sttLink = &sttNewStage->next;
+		*sttLink = sttNewStage;/**//*The prior stage's next = sttNewStage*//**//*sttPipe->head = sttNewStage*/
+		sttLink = &sttNewStage->next;/**/
 	} //34
-	*sttLink = (stage_t*)NULL; //Terminate list  //36-37 The link member of the final stage is set to NULL to terminate the list, and the pipeline's tail is set to point at the final stage. The tail pointer allows pipe_result to easily find the final product of the pipeline, which is stored into the final stage.
+	*sttLink = (stage_t*)NULL;/**//*The last stage's next = NULL*/ //Terminate list  //36-37 The link member of the final stage is set to NULL to terminate the list, and the pipeline's tail is set to point at the final stage. The tail pointer allows pipe_result to easily find the final product of the pipeline, which is stored into the final stage.
 	sttPipe->tail = sttNewStage; //Record the tail //37
 	for (sttStage = sttPipe->head; sttStage->next != NULL; sttStage = sttStage->next) { //52-59 After all the stage data is initialized, pipe_create creates a thread for each stage. The extra "final stage" does not get a thread—the termination condition of the for loop is that the current stage's next link is not NULL, which means that it will not process the final stage.			//Create the threads for the pipe stages only after all the data is initialized(including all links). Note that the last stage doesn't get a thread, it's just a receptacle for the final pipeline value. At this point, proper cleanup on an error would take up more space than worthwhile in a "simple example," so instead of cancelling and detaching all the threads already created, plus the synchronization object and memory cleanup done for earlier errors, it will simply abort.
 		intStatus = pthread_create(&sttStage->thread, NULL, pipe_stage/*1.2*/, (void*)sttStage); if (intStatus != 0) err_abort(intStatus, "Create pipe stage");

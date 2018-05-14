@@ -11,43 +11,48 @@ typedef struct stage_tag {		//9						//9-17 Each stage of a pipeline is represen
 	struct stage_tag* next;		//Next stage			//9-17 and next is a pointer to the following stage.
 } stage_t;							//17
 
-typedef struct pipe_tag {	//23							//23-29 The pipe_t structure describes a pipeline. It provides pointers to the first and last stage of a pipeline.		//External structure representing the entire pipeline.
-	pthread_mutex_t mutex;	//Mutex to protect pipe
-	stage_t* head;				//First stage				//23-29 The first stage, head, represents the first thread in the pipeline.
-	stage_t* tail;				//Final stage				//23-29 The last stage, tail, is a special stage_t that has no thread—it is a place to store the final result of the pipeline.
-	int stages;					//Number of stages
-	int active;					//Active data elements
-} pipe_t;						//29
+typedef struct pipe_tag {		//23						//23-29 The pipe_t structure describes a pipeline. It provides pointers to the first and last stage of a pipeline.		//External structure representing the entire pipeline.
+	pthread_mutex_t mutex;		//Mutex to protect pipe
+	stage_t* head;					//First stage			//23-29 The first stage, head, represents the first thread in the pipeline.
+	stage_t* tail;					//Final stage			//23-29 The last stage, tail, is a special stage_t that has no thread—it is a place to store the final result of the pipeline.
+	int stages;						//Number of stages
+	int active;						//Active data elements
+} pipe_t;							//29
 
-int pipe_send(stage_t* sttStage, long lngData) { //Part 2 shows pipe_send, a utility function used to start data along a pipeline, and also called by each stage to pass data to the next stage.		//Internal function to send a "message" to the specified pipe stage. Threads use this to pass along the modified data item.
+int pipe_send(stage_t* stage, long data) { //Part 2 shows pipe_send, a utility function used to start data along a pipeline, and also called by each stage to pass data to the next stage.		//Internal function to send a "message" to the specified pipe stage. Threads use this to pass along the modified data item.
 	int intStatus;
-	intStatus = pthread_mutex_lock(&sttStage->mutex); if (intStatus != 0) return intStatus;
-	while (sttStage->dataReady) { //17-23 It begins by waiting on the specified pipeline stage's ready condition variable until it can accept new data.			//If there's data in the pipe stage, wait for it to be consumed.
-		intStatus = pthread_cond_wait(&sttStage->condReady, &sttStage->mutex);
+	intStatus = pthread_mutex_lock(&stage->mutex); if (intStatus != 0) return intStatus;
+	while (stage->dataReady) { //17-23 It begins by waiting on the specified pipeline stage's ready condition variable until it can accept new data.			//If there's data in the pipe stage, wait for it to be consumed.
+		intStatus = pthread_cond_wait(&stage->condReady, &stage->mutex);
 		if (intStatus != 0) {
-			pthread_mutex_unlock(&sttStage->mutex);
+			pthread_mutex_unlock(&stage->mutex);
 			return intStatus;
 		}
 	} //23
-	sttStage->data = lngData; //28-30 Store the new data value, and then tell the stage that data is available.				//Send the new data
-	sttStage->dataReady = 1;
-	intStatus = pthread_cond_signal/*2.3*/(&sttStage->condAvail); /*30*/ if (intStatus != 0) { pthread_mutex_unlock(&sttStage->mutex); return intStatus; }
-	intStatus = pthread_mutex_unlock(&sttStage->mutex);
+	stage->data = data; //28-30 Store the new data value, and then tell the stage that data is available.				//Send the new data
+	stage->dataReady = 1;
+	intStatus = pthread_cond_signal(&stage->condAvail); //30
+	if (intStatus != 0) {
+		pthread_mutex_unlock(&stage->mutex);
+		return intStatus;
+	}
+	intStatus = pthread_mutex_unlock(&stage->mutex);
 	return intStatus;
 }
 
-void* pipe_stage(void* vrbArg) { //Part 3 shows pipe_stage, the start function for each thread in the pipeline. The thread's argument is a pointer to its stage_t structure.		//The thread start routine for pipe stage threads. Each will wait for a data item passed from the caller or the previous stage, modify the data and pass it along to the next (or final) stage.
-	stage_t* sttStage = (stage_t*)vrbArg;
-	stage_t* sttNextStage = sttStage->next;
+void* pipe_stage(void* arg) { //Part 3 shows pipe_stage, the start function for each thread in the pipeline. The thread's argument is a pointer to its stage_t structure.		//The thread start routine for pipe stage threads. Each will wait for a data item passed from the caller or the previous stage, modify the data and pass it along to the next (or final) stage.
+	stage_t* stage = (stage_t*)arg;
+	stage_t* next_stage = stage->next;
 	int intStatus;
-	intStatus = pthread_mutex_lock(&sttStage->mutex); if (intStatus != 0) err_abort(intStatus, "Lock pipe stage");
+
+	intStatus = pthread_mutex_lock(&stage->mutex); if (intStatus != 0) err_abort(intStatus, "Lock pipe stage");
 	while (1) { //16-27 The thread loops forever, processing data. Because the mutex is locked outside the loop, the thread appears to have the pipeline stage's mutex locked all the time. However, it spends most of its time waiting for new data, on the avail condition variable. Remember that a thread automatically unlocks the mutex associated with a condition variable, while waiting on that condition variable. In reality, therefore, the thread spends most of its time with mutex unlocked.
-		while (sttStage->dataReady != 1) {
-			intStatus = pthread_cond_wait/*1.3*/(&sttStage->condAvail, &sttStage->mutex); if (intStatus != 0) err_abort(intStatus, "Wait for previous stage"); //A condition variable wait always returns with the mutex locked. @ 1. 3.3 Condition variables.
+		while (stage->dataReady != 1) {
+			intStatus = pthread_cond_wait(&stage->condAvail, &stage->mutex); if (intStatus != 0) err_abort(intStatus, "Wait for previous stage"); //A condition variable wait always returns with the mutex locked. @ 1. 3.3 Condition variables.
 		}
-		pipe_send/*3.1*/(sttNextStage, sttStage->data + 1); //22-26 When given data, the thread increases its own data value by one, and passes the result to the next stage. The thread then records that the stage no longer has data by clearing the dataReady flag, and signals the ready condition variable to wake any thread that might be waiting for this pipeline stage.
-		sttStage->dataReady = 0;
-		intStatus = pthread_cond_signal(&sttStage->condReady); if (intStatus != 0) err_abort(intStatus, "Wake next stage"); //26
+		pipe_send(next_stage, stage->data + 1); //22-26 When given data, the thread increases its own data value by one, and passes the result to the next stage. The thread then records that the stage no longer has data by clearing the dataReady flag, and signals the ready condition variable to wake any thread that might be waiting for this pipeline stage.
+		stage->dataReady = 0;
+		intStatus = pthread_cond_signal(&stage->condReady); if (intStatus != 0) err_abort(intStatus, "Wake next stage"); //26
 	} //27 //Notice that the routine never unlocks the stage->mutex. The call to pthread_cond_wait implicitly unlocks the mutex while the thread is waiting, allowing other threads to make progress. Because the loop never terminates, this function has no need to unlock the mutex explicitly.			//Waiting on a condition variable atomically releases the associated mutex and waits until another thread signals the condition variable. The mutex must always be locked when you wait on a condition variable and, when a thread wakes up from a condition variable wait, it always resumes with the mutex locked. @ 3.3 Condition variables
 }
 
@@ -69,17 +74,17 @@ int pipe_create(pipe_t* sttPipe, unsigned intStages) { //Part 4 shows pipe_creat
 	*sttLink = (stage_t*)NULL; //Terminate list  //36-37 The link member of the final stage is set to NULL to terminate the list, and the pipeline's tail is set to point at the final stage. The tail pointer allows pipe_result to easily find the final product of the pipeline, which is stored into the final stage.
 	sttPipe->tail = sttNewStage; //Record the tail //37
 	for (sttStage = sttPipe->head; sttStage->next != NULL; sttStage = sttStage->next) { //52-59 After all the stage data is initialized, pipe_create creates a thread for each stage. The extra "final stage" does not get a thread—the termination condition of the for loop is that the current stage's next link is not NULL, which means that it will not process the final stage.			//Create the threads for the pipe stages only after all the data is initialized(including all links). Note that the last stage doesn't get a thread, it's just a receptacle for the final pipeline value. At this point, proper cleanup on an error would take up more space than worthwhile in a "simple example," so instead of cancelling and detaching all the threads already created, plus the synchronization object and memory cleanup done for earlier errors, it will simply abort.
-		intStatus = pthread_create(&sttStage->thread, NULL, pipe_stage/*1.2*/, (void*)sttStage); if (intStatus != 0) err_abort(intStatus, "Create pipe stage");
+		intStatus = pthread_create(&sttStage->thread, NULL, pipe_stage, (void*)sttStage); if (intStatus != 0)	err_abort(intStatus, "Create pipe stage");
 	} //59
 	return 0;
 }
 
-int pipe_start(pipe_t* sttPipe, long lngValue) { //Part 5 shows pipe_start and pipe_result. The pipe_start function pushes an item of data into the beginning of the pipeline and then returns immediately without waiting for a result. The pipe_result function allows the caller to wait for the final result, whenever the result might be needed.		//External interface to start a pipeline by passing data to the first stage. The routine returns while the pipeline processes in parallel. Call the pipe_result return to collect the final stage values(note that the pipe will stall when each stage fills, until the result is collected).
+int pipe_start(pipe_t* pipe, long value) { //Part 5 shows pipe_start and pipe_result. The pipe_start function pushes an item of data into the beginning of the pipeline and then returns immediately without waiting for a result. The pipe_result function allows the caller to wait for the final result, whenever the result might be needed.		//External interface to start a pipeline by passing data to the first stage. The routine returns while the pipeline processes in parallel. Call the pipe_result return to collect the final stage values(note that the pipe will stall when each stage fills, until the result is collected).
 	int intStatus;
-	intStatus = pthread_mutex_lock(&sttPipe->mutex); if (intStatus != 0)	err_abort(intStatus, "Lock pipe mutex");
-	sttPipe->active++;
-	intStatus = pthread_mutex_unlock(&sttPipe->mutex);	if (intStatus != 0) err_abort(intStatus, "Unlock pipe mutex"); //	//19-22 The pipe_start function sends data to the first stage of the pipeline. The function increments a count of "active" items in the pipeline, which allows pipe_ result to detect that there are no more active items to collect, and to return immediately instead of blocking. You would not always want a pipeline to behave this way — it makes sense for this example because a single thread alternately "feeds" and "reads" the pipeline, and the application would hang forever if the user inadvertently reads one more item than had been fed.
-	pipe_send/*2.2*/(sttPipe->head, lngValue);
+	intStatus = pthread_mutex_lock(&pipe->mutex); if (intStatus != 0)	err_abort(intStatus, "Lock pipe mutex");
+	pipe->active++;
+	intStatus = pthread_mutex_unlock(&pipe->mutex);	if (intStatus != 0) err_abort(intStatus, "Unlock pipe mutex"); //	//19-22 The pipe_start function sends data to the first stage of the pipeline. The function increments a count of "active" items in the pipeline, which allows pipe_ result to detect that there are no more active items to collect, and to return immediately instead of blocking. You would not always want a pipeline to behave this way — it makes sense for this example because a single thread alternately "feeds" and "reads" the pipeline, and the application would hang forever if the user inadvertently reads one more item than had been fed.
+	pipe_send(pipe->head, value);
 	return 0; //22
 }
 
@@ -115,7 +120,7 @@ int main() { //Part 6 shows the main program that drives the pipeline. It create
 	pipe_t sttMyPipe;
 	long lngValue, lngResult;
 	char chrLine[128];
-	pipe_create/*1.1*/(&sttMyPipe, intStages);
+	pipe_create(&sttMyPipe, intStages);
 	printf("Enter integer values, or \"=\" for next result\n");
 	while (1) {
 		printf("Data> ");
@@ -130,7 +135,7 @@ int main() { //Part 6 shows the main program that drives the pipeline. It create
 			if (sscanf(chrLine, "%ld", &lngValue) < 1)
 				fprintf(stderr, "Enter an integer lngValue\n");
 			else
-				pipe_start/*2.1*/(&sttMyPipe, lngValue);
+				pipe_start(&sttMyPipe, lngValue);
 		}
 	}
 }
