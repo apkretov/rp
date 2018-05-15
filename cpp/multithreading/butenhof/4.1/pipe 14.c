@@ -79,23 +79,23 @@ int pipe_start(pipe_t* sttPipe, long lngValue) { //Part 5 shows pipe_start and p
 	return 0; //22
 }
 
-int pipe_result(pipe_t* sttPipe, long *lngResult) { //23-47 The pipe_result function first checks whether there is an active item in the pipeline. If not, it returns with a status of 0, after unlocking the pipeline mutex.			//Collect the result of the pipeline. Wait for a result if the pipeline hasn't produced one.
-	stage_t* tail = sttPipe->tail;
+int pipe_result(pipe_t* pipe, long *result) { //23-47 The pipe_result function first checks whether there is an active item in the pipeline. If not, it returns with a status of 0, after unlocking the pipeline mutex.			//Collect the result of the pipeline. Wait for a result if the pipeline hasn't produced one.
+	stage_t* tail = pipe->tail;
 	//ORIG unused: long value;
 	int empty = 0;
 	int intStatus;
-	intStatus = pthread_mutex_lock(&sttPipe->mutex); if (intStatus != 0)	err_abort(intStatus, "Lock pipe mutex");
-	if (sttPipe->active <= 0)
+	intStatus = pthread_mutex_lock(&pipe->mutex); if (intStatus != 0)	err_abort(intStatus, "Lock pipe mutex");
+	if (pipe->active <= 0)
 		empty = 1;
 	else
-		sttPipe->active--;
-	intStatus = pthread_mutex_unlock(&sttPipe->mutex);	if (intStatus != 0) err_abort(intStatus, "Unlock pipe mutex");
+		pipe->active--;
+	intStatus = pthread_mutex_unlock(&pipe->mutex);	if (intStatus != 0) err_abort(intStatus, "Unlock pipe mutex");
 	if (empty)
 		return 0; //47
 	pthread_mutex_lock(&tail->mutex); //48-55 If there is another item in the pipeline, pipe_result locks the tail(final) stage, and waits for it to receive data. It copies the data and then resets the stage so it can receive the next item of data. Remember that the final stage does not have a thread, and cannot reset itself.
 	while (!tail->dataReady)
 		pthread_cond_wait(&tail->condAvail, &tail->mutex);
-	*lngResult = tail->data;
+	*result = tail->data;
 	tail->dataReady = 0;
 	pthread_cond_signal(&tail->condReady);
 	pthread_mutex_unlock(&tail->mutex); //55
