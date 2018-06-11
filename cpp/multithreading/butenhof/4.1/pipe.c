@@ -104,7 +104,7 @@ int pipe_result(pipe_t* sttPipe, long *lngResult) { //23-47 The pipe_result func
 }
 
 int main() { //Part 6 shows the main program that drives the pipeline. It creates a pipeline, and then loops reading lines from stdin. If the line is a single "=" character, it pulls a result from the pipeline and prints it. Otherwise, it converts the line to an integer value, which it feeds into the pipeline.			//The main program to "drive" the pipeline...
-	const unsigned intStages = 10;
+	const unsigned intStages = 3;
 	pipe_t sttMyPipe;
 	long lngValue, lngResult;
 	char chrLine[128];
