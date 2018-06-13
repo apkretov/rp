@@ -1,9 +1,7 @@
 /*
-auto keyword
-Lambda expressions
-*/
+//auto keyword
+//Lambda expressions
 
-/*
 #include <iostream>
 #include <algorithm>
 
@@ -18,4 +16,14 @@ int main() {
 	std::vector<unsigned> vec{52, 33, 81, 49, 10, 67};
 	for_each(vec, lambdaOut);
 }
+
+
+//The libraries: <functional>, <algorithm>, <numeric>, <iterator>:
+
+//<functional>:
+//placeholders
+//bind
+
+//<algorithm>:
+//transform
 */
