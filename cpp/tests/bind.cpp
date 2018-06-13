@@ -2,7 +2,9 @@
 #include <iostream>     // std::cout // bind example @ http://www.cplusplus.com/reference/functional/bind/
 #include <functional>   // std::bind
 
-double my_divide (double x, double y) { return x / y; } // a function: (also works with function object: std::divides<double> my_divide;)
+double my_divide (double x, double y) { // a function: (also works with function object: std::divides<double> my_divide;)
+	return x / y;
+}
 
 struct MyPair {
   double a, b;

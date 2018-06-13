@@ -4,7 +4,9 @@
 #include <vector>       // std::vector
 #include <functional>   // std::plus
 
-int op_increase (int i) { return ++i; }
+int op_increase (int i) {
+	return ++i;
+}
 
 int main () {
 	std::vector<int> foo, bar;
@@ -14,7 +16,6 @@ int main () {
 	std::transform(foo.cbegin(), foo.cend(), bar.begin(), op_increase); // bar: 11 21 31 41 51
 	std::transform(foo.cbegin(), foo.cend(), bar.cbegin(), foo.begin(), std::plus<int>()); // std::plus adds together its two arguments: // foo: 21 41 61 81 101
 	std::cout << "foo contains:";
-	//ORIG for (std::vector<int>::iterator it=foo.begin(); it!=foo.end(); ++it)
 	for (auto it = foo.cbegin(); it != foo.cend(); ++it)
 		std::cout << ' ' << *it;
 	std::cout << '\n';

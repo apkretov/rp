@@ -1,3 +1,4 @@
+/*
 #include <stdio.h>
 #include <utility>
 using std::size_t;
@@ -23,3 +24,4 @@ int main() {
 		printf("%u\n", intArray[i]);
 	return 0;
 }
+*/
