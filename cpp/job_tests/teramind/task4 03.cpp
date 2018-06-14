@@ -1,11 +1,16 @@
 ﻿// auto keyword
 // decltype specifier
 // Lambda expressions
-// Iterator-based functions from <functional>, <algorithm>, <numeric>, <iterator> (first-class and higher-order functions).
+// Iterator-based functions from the libraries: <functional>, <algorithm>, <numeric>, <iterator>:
 //		<functional>:
 //			placeholders
 //			bind
 //			function
+//		<algorithm>:
+//			for_each (before C++11)
+//			transform (before C++11)
+//		<numeric>:
+//			accumulate (before C++11)
 
 #include <iostream>
 #include <algorithm>
@@ -54,18 +59,12 @@ namespace nsNumeric { // Iterator-based functions from <numeric>
 	}
 }
 
-namespace first_class_and_higher_order {
-
-}
-
 int main() {
 	nsAutoDecltypeLambda::printContainer(); //auto keyword. decltype specifier. Lambda expressions.
 	nsAutoDecltypeLambda::decltypeFn();
-	puts("");
+	std::cout << '\n';
 	nsFunctional::addDisplay(10); // Iterator-based functions from <functional>: placeholders, bind, function
-	puts("");
+	std::cout << '\n';
 	nsNumeric::printAccumulate(); // Iterator-based functions from <numeric>
-	puts("");
-	nsFirstHigher::fisrt_class();
 	return 0;
 }
