@@ -26,6 +26,11 @@ int main () {
   std::cout << std::accumulate(numbers, numbers + 3, init, myfunction);
   std::cout << '\n';
 
+  std::cout << "using lambda expression: ";
+  //std::cout << std::accumulate(numbers, numbers + 3, init, [](const int x, const int y) { return x + 2 * y; });
+  std::cout << std::accumulate(numbers, numbers + 3, init, [](int x, int y) { return x + 2 * y; });
+  std::cout << '\n';
+
   std::cout << "using custom object: ";
   std::cout << std::accumulate(numbers, numbers + 3, init, myobject);
   std::cout << '\n';

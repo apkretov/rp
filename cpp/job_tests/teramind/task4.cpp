@@ -1,14 +1,20 @@
-﻿// auto keyword
+﻿/*
+// auto keyword
 // decltype specifier
 // Lambda expressions
-// Iterator-based functions from <functional>, <algorithm>, <numeric>, <iterator> (first-class and higher-order functions).
+// Iterator-based functions from <functional>, <algorithm>, <numeric>, <iterator>.
 //		<functional>:
 //			placeholders
 //			bind
 //			function
+//	First-class and higher-order functions offer map (std::map), filter (std::remove_if), and fold (std::accumulate).
 
 #include <iostream>
 #include <algorithm>
+#include <functional>
+#include <numeric>
+#include <map>
+
 namespace nsAutoDecltypeLambda { //auto keyword. decltype specifier. Lambda expressions.
 	template <typename container, typename lambdaExpr>
 	void for_each(container c, lambdaExpr le) { std::for_each(c.begin(), c.end(), le); }
@@ -32,7 +38,6 @@ namespace nsAutoDecltypeLambda { //auto keyword. decltype specifier. Lambda expr
 	}
 }
 
-#include <functional>
 namespace nsFunctional { // Iterator-based functions from <functional>: placeholders, bind, function
 	struct Foo {
 		 Foo(int num) : num_(num) {}
@@ -43,7 +48,6 @@ namespace nsFunctional { // Iterator-based functions from <functional>: placehol
 	std::function<void(int)> addDisplay = std::bind( &Foo::printAdd, foo, std::placeholders::_1 );  //Store a call to a member function and object.
 }
 
-#include <numeric>
 namespace nsNumeric { // Iterator-based functions from <numeric>
 	int myfunction (int x, int y) { return x + y; }
 
@@ -54,8 +58,24 @@ namespace nsNumeric { // Iterator-based functions from <numeric>
 	}
 }
 
-namespace first_class_and_higher_order {
+namespace nsFirstHigher { //First-class and higher-order functions offer map (std::map), filter (std::remove_if), and fold (std::accumulate).
+	void mapFn() {
+		std::map<const char, std::function<float(float, float)>> arithm;
+		arithm.insert(std::make_pair('+', [](float a, float b){ return a + b; }));
+		arithm.insert(std::make_pair('-', [](float a, float b){ return a - b; }));
+		std::cout << "2 + 3 = " << arithm['+'](2, 3) << '\n';
+		std::cout << "2 - 3 = " << arithm['-'](2, 3) << '\n';
+	}
 
+	void fold() {
+		const int init = 100;
+		const int numbers[] = {10, 20, 30};
+		std::cout << std::accumulate(numbers, numbers + 3, init, [](int x, int y) { return x + 2 * y; }) << '\n';
+	}
+
+	void filter() {
+		///////////////
+	}
 }
 
 int main() {
@@ -66,6 +86,9 @@ int main() {
 	puts("");
 	nsNumeric::printAccumulate(); // Iterator-based functions from <numeric>
 	puts("");
-	nsFirstHigher::fisrt_class();
+	nsFirstHigher::mapFn();
+	nsFirstHigher::fold();
+	///////////////nsFirstHigher::filter();
 	return 0;
 }
+*/
