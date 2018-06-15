@@ -1,5 +1,5 @@
-// remove_if example @ http://www.cplusplus.com/reference/algorithm/remove_if/
-#include <iostream>     // std::cout
+/*
+#include <iostream>     // std::cout // remove_if example @ http://www.cplusplus.com/reference/algorithm/remove_if/
 #include <algorithm>    // std::remove_if
 
 bool IsOdd (int i) { return ((i%2)==1); }
@@ -20,3 +20,4 @@ int main () {
 
   return 0;
 }
+*/

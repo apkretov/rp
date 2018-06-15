@@ -1,5 +1,4 @@
-﻿/*
-// auto keyword
+﻿// auto keyword
 // decltype specifier
 // Lambda expressions
 // Iterator-based functions from <functional>, <algorithm>, <numeric>, <iterator>.
@@ -74,9 +73,22 @@ namespace nsFirstHigher { //First-class and higher-order functions offer map (st
 	}
 
 	void filter() {
-		std::vector<unsigned> array{1, 2, 3, 4};
-		auto pend = std::remove_if(array.begin(), array.end(), [](int i) { return (i % 2 == 1); });
-		std::for_each(array.begin(), pend, [](const unsigned& n) { std::cout << " " << n; });
+//		int myints[] = {1,2,3,4,5,6,7,8,9};
+		std::vector<unsigned> myints{1,2,3,4,5,6,7,8,9};
+//		int* pbegin = myints; // bounds of range:
+//		int* pend = myints+sizeof(myints)/sizeof(int);
+//		pend = std::remove_if (pbegin, pend, [](int i) { return ((i%2)==1); });
+//		auto pend = std::remove_if(myints, myints+sizeof(myints)/sizeof(int), [](int i) { return ((i%2)==1); });
+		//std::remove_if(myints.begin(), myints.end(), [](int i) { return ((i%2)==1); });
+		auto pend = std::remove_if(myints.begin(), myints.end(), [](int i) { return ((i%2)==1); });
+
+//		for (int* p=pbegin; p!=pend; ++p)
+//			std::cout << ' ' << *p;
+//		std::cout << '\n';
+
+		//std::for_each(myints.cbegin(), myints.cend(), [myints&](){std::cout << ' ' << myints;});
+		//std::for_each(myints.cbegin(), myints.cend(), [](const unsigned& n) { std::cout << " " << n; });
+		std::for_each(myints.begin(), pend, [](const int& n) { std::cout << " " << n; });
 
 	}
 }
@@ -98,4 +110,3 @@ int main() {
 	puts("");
 	return 0;
 }
-*/
