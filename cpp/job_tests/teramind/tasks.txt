@@ -1,6 +1,0 @@
-If a struct has some members of type int and char, how do you compare two instances of this struct to see if the members have the same value? *
-Write some short C or C++ code to generate a stack overflow. *
-Write a recursive function in C or C++ to calculate the Nth number in the Fibonacci sequence. *
-What are a few of the functional-style programming methods that are available in C++11? *
-What benefit is provided by compiling in "Debug" mode (-O0 in gcc)? *
-What are some compiler optimizations that you know (ie. loop unrolling, constant folding, etc)? *
