@@ -1,6 +1,0 @@
-auto keyword: //Functional programming in C++ @ http://blog.madhukaraphatak.com/functional-programming-in-c++/
-auto i = 10;
-
-Lambda expressions @ http://en.cppreference.com/w/cpp/language/lambda
-Functional data types AKA lambdas: //Functional programming in C++ @ http://blog.madhukaraphatak.com/functional-programming-in-c++/
-auto println = [](const char  *message){ std::cout << message << std::endl;};

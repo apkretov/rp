@@ -1,6 +1,0 @@
-       Options That Control Optimization 
-	   -O0 Reduce compilation time and make debugging produce the expected results.  This is the default.
-
-       Most optimizations are only enabled if an -O level is set on the command line.  Otherwise they are disabled, even if individual optimization flags are
-       specified.
-
