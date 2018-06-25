@@ -1,3 +1,4 @@
+/*
 #include <QCoreApplication>
 #include <QDir>
 #include <iostream>
@@ -17,3 +18,4 @@ int main(int argc, char *argv[]) {
 	 }
 	 return 0;
 }
+*/
