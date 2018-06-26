@@ -1,3 +1,4 @@
+/*
 #include <glob.h> // Very briefly (and wholly untested) you might try something like this // How can I get only txt files from directory in c? @ https://stackoverflow.com/questions/12976733/how-can-i-get-only-txt-files-from-directory-in-c
 #include <stdio.h>
 
@@ -13,3 +14,4 @@ void glob_example() {
 int main () {
 	glob_example();
 }
+*/
