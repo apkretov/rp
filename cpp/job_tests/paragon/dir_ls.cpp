@@ -32,7 +32,7 @@ int main(void) {
 		return EXIT_FAILURE;
 	}
 
-	while ( (dptr = readdir(dp)) ) {		// TO DO: Print column headers aligned. //Reading Directories in C++ @ http://www.cse.unt.edu/~donr/courses/4410/NOTES/readingDirectoriesInUnix.html
+	while ( (dptr = readdir(dp)) ) {		// TO DO: Sort entries. // TO DO: Print column headers aligned. //Reading Directories in C++ @ http://www.cse.unt.edu/~donr/courses/4410/NOTES/readingDirectoriesInUnix.html
 		if (dptr->d_name[0] != '.') {		// Check if the name of the file/folder begins with '.'. If yes, then do not display it.
 			printf("%s", dptr->d_name);	// TO DO: Align the print-outs.
 			stat(dptr->d_name, &buff);
