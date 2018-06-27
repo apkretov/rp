@@ -1,3 +1,4 @@
+/*
 //#include "stdafx.h"
 #include <string> // ОБНОВЛЕНИЕ 2017: В С++ 17 теперь есть официальный способ перечислить файлы вашей файловой системы: std::filesystem. Ниже приведен отличный ответ от Shreevardhan с этим исходным кодом: @ http://qaru.site/questions/17239/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c //UPDATE 2017: @ https://stackoverflow.com/questions/612097/how-can-i-get-the-list-of-files-in-a-directory-using-c-or-c
 #include <iostream>
@@ -12,3 +13,4 @@ int main() {
         std::cout << p << std::endl;
 	 return 0;
 }
+*/
