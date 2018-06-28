@@ -1,4 +1,3 @@
-/*
 #include <QDir>					// Access to directory structures and their contents.
 #include <QDirIterator>			// An iterator for directory entrylists.
 #include <QTextStream>			// A convenient interface for reading and writing QString text.
@@ -90,4 +89,3 @@ int main() {
 //	listDirectories();
 //	listRecursively();
 }
-*/
