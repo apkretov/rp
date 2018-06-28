@@ -1,4 +1,3 @@
-/*
 #include <QCoreApplication> // A program that lists all the files in the current directory (excluding symbolic links), sorted by size, smallest first: @ http://doc.qt.io/qt-5/qdir.html#examples
 #include <QDir>
 #include <iostream>
@@ -10,7 +9,7 @@
 using std::cout;
 using std::endl;
 
-int main(int argc, char *argv[]) {
+int main_qdir_01(int argc, char *argv[]) {
 	QCoreApplication app(argc, argv);
 	//ORIG QDir dir;
 	QDir dir("/home/alex");
@@ -20,21 +19,13 @@ int main(int argc, char *argv[]) {
 	//TEST dir.setSorting(QDir::Name);
 
 	QFileInfoList list = dir.entryInfoList();
+	cout << "qdir_01\n\n";
 	cout << "A program that lists all the files in the current directory (excluding symbolic links), sorted by size, smallest first" << endl;
 	cout << "     Bytes Filename" << endl;
 	for (int i = 0; i < list.size(); ++i) {
 		QFileInfo fileInfo = list.at(i);
 		cout << qPrintable(QString("%1 %2").arg(fileInfo.size(), 10).arg(fileInfo.fileName()));
-		//cout << fileInfo.lastModified();
-		//qDebug(fileInfo.lastModified().toString());
-		//QDateTime dtmLastMofied = fileInfo.lastModified();
-		//const QDateTime* dtmLastMofied = fileInfo.lastModified();
-		//qDebug(dtmLastMofied.toStrig());
-		//qDebug(dtmLastMofied->toStrig());
-		//cout << qPrintable(QString("%1 %2 %3").arg(fileInfo.size(), 10).arg(fileInfo.fileName()).arg(fileInfo.lastModified()));
-		//cout << dtmLastMofied;
 		cout << endl;
 	}
 	return 0;
 }
-*/

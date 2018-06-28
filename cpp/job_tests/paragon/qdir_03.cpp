@@ -3,7 +3,7 @@
 #include <QFileInfo>
 #include <QDateTime>
 
-int main(int argc, char *argv[]) {
+int main_qdir_03(int argc, char *argv[]) {
 	QCoreApplication app(argc, argv);
 
 	QTextStream out(stdout);

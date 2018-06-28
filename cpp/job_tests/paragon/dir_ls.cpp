@@ -1,46 +1,38 @@
-/*
-// dirent_052.cpp //Developing Linux Utility like 'ls' in C. Omitting the files from output that begin with '.' @ https://www.go4expert.com/articles/developing-linux-utility-ls-c-t27426/
+#include <QCoreApplication> // qdir_01.cpp // A program that lists all the files in the current directory (excluding symbolic links), sorted by size, smallest first: @ http://doc.qt.io/qt-5/qdir.html#examples
+#include <QDir>
+#include <QTextStream>		// Provides a convenient interface for reading and writing QString text.
+#include <QFileInfo>
+#include <QDateTime>
 
-#ifndef WIN32				// Linux, gcc. //TO DO: Comment this and remove the following comment: //C++ How to check the last modified time of a file @ https://stackoverflow.com/questions/40504281/c-how-to-check-the-last-modified-time-of-a-file
-#include <dirent.h>
-#else							// Windows, MSVS.
-#include "stdafx.h"		// In MSVS 2017, this is unnecessary if %(ForcedIncludeFiles) includes StdAfx.h (Configuration Properties -> C/C++ -> Advanced -> Forced Include File).
-#include "dirent.h"		// TO DO: Include this header file to the source one.
-#endif						// WIN32
+int main(int argc, char *argv[]) {
+	QCoreApplication app(argc, argv); // TO DO: Comment.
+	QDir dir("/home/alex"); //QDir dir("."); //ORIG QDir dir; //TO DO: Comment.
+	QTextStream out(stdout);		// Interface for writing text.
 
-#include <stdio.h>
-#include <stdlib.h>		// For EXIT_SUCCESS, EXIT_FAILURE constants.
-#include <sys/types.h>	// TO DO: Document.
-#include <sys/stat.h>	// For the stat structure. //TO DO: Check if these are necessary
-#include <time.h>			// For the ctime function.
+	dir.setSorting(QDir::Name		// Sort by name.
+		| QDir::DirsFirst				// Put the directories first, then the files.
+		| QDir::IgnoreCase			// Sort case-insensitively.
+		| QDir::LocaleAware );		// Sort items appropriately using the current locale settings.
 
-int main(void) {
-	char *curr_dir = NULL;
-	DIR *dp = NULL;
-	struct dirent *dptr = NULL;
-	struct stat buff;
+	dir.setFilter(QDir::Dirs		// List directories that match the filters. //TO DO: Check if directories are needed.
+		| QDir::Files					// List files.
+		| QDir::NoSymLinks			// Do not list symbolic links (ignored by operating systems that don't support symbolic links).
+		| QDir::NoDotAndDotDot		// Do not list the special entries "." and "..".
+		| QDir::System);				// List system files (on Unix, FIFOs, sockets and device files are included; on Windows, .lnk files are included).
 
-	curr_dir = ".";
-	if (NULL == curr_dir) {
-		printf("\n ERROR: Could not get the directory!\n");
-		return EXIT_FAILURE;
+	QStringList filters;				//Sets the name filters. Each name filter is a wildcard filter that understands * and ? wildcards.
+	//OFF filters << "test*"; //TO DO: Set it.
+	dir.setNameFilters(filters);
+
+	QFileInfoList list = dir.entryInfoList();
+	out << "qdir_01\n\n";
+	//OFF out << "path/file_name\t file_size\t file_modification_time\n";						// Print the header.
+	for (int i = 0; i < list.size(); ++i) {
+		QFileInfo fileInfo = list.at(i);
+		out << fileInfo.fileName() << '\t';															// Print the file name.
+		out << fileInfo.size() << '\t';																// Print the size.
+		out << fileInfo.lastModified().toString(Qt::SystemLocaleShortDate) << endl;	//	Print the last modification date in the short format used by the operating system.
 	}
-
-	dp = opendir((const char*)curr_dir);
-	if (NULL == dp) {
-		printf("\n ERROR: Could not open the directory!\n");
-		return EXIT_FAILURE;
-	}
-
-	while ( (dptr = readdir(dp)) ) {		// TO DO: Sort entries. // TO DO: Print column headers aligned. //Reading Directories in C++ @ http://www.cse.unt.edu/~donr/courses/4410/NOTES/readingDirectoriesInUnix.html
-		if (dptr->d_name[0] != '.') {		// Check if the name of the file/folder begins with '.'. If yes, then do not display it.
-			printf("%s", dptr->d_name);	// TO DO: Align the print-outs.
-			stat(dptr->d_name, &buff);
-			printf("\tFile size: %ld", buff.st_size);
-			printf("\tModification time: %s", ctime(&buff.st_mtime));	// TO DO: Print out in a shorter format.
-		}
-	}
-	closedir(dp);
+	out << '\n';
 	return 0;
 }
-*/
