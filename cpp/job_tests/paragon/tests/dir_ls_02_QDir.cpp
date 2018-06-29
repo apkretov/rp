@@ -1,3 +1,4 @@
+/*
 #include <QDir>					// Access to directory structures and their contents.
 #include <QTextStream>			// A convenient interface for reading and writing QString text.
 #include <QFileInfo>				// System-independent file information.
@@ -35,3 +36,4 @@ int main() {
 	 //OFF std::cin.get();
 	 return 0;
 }
+*/

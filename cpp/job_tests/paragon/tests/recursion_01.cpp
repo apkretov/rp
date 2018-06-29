@@ -1,8 +1,7 @@
+/*
 #include <QDirIterator>
 #include <QDebug>
 #include <QDir>
-
-unsigned long count = 0;
 
 void scanDir(QDir dir) { // Recursively iterate over all the files in a directory and its subdirectories in Qt @ https://stackoverflow.com/questions/8052460/recursively-iterate-over-all-the-files-in-a-directory-and-its-subdirectories-in/8057236 // Also: Recursively searching for files in the computer @ https://stackoverflow.com/questions/25639874/recursively-searching-for-files-in-the-computer
 	//ORIG dir.setNameFilters(QStringList("*.nut"));
@@ -13,9 +12,9 @@ void scanDir(QDir dir) { // Recursively iterate over all the files in a director
 
 	QStringList fileList = dir.entryList();
 	for (int i=0; i<fileList.count(); i++)	{
-		//OFF if(fileList[i] != "main.nut" && fileList[i] != "info.nut") {
-		//OFF 	qDebug() << "Found file: " << fileList[i];
-		//OFF }
+		if(fileList[i] != "main.nut" && fileList[i] != "info.nut") {
+			qDebug() << "Found file: " << fileList[i];
+		}
 	}
 
 	dir.setFilter(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::NoSymLinks);
@@ -28,8 +27,8 @@ void scanDir(QDir dir) { // Recursively iterate over all the files in a director
 
 int main() {
 	//QDir dir("/home/alex/3.1/");
-	//QDir dir("/home/alex/rp/_stepik/c_cpp_multi-thread_programming");
-	QDir dir("/");
-	qDebug() << "Scanning: " << dir.path();
+	QDir dir("/home/alex/rp/_stepik/c_cpp_multi-thread_programming");
+	//QDir dir("/");
 	scanDir(dir);
 }
+*/

@@ -45,7 +45,7 @@ void listFilesInDirectory() {
 void listDirectories() {
 	QDir dir(dirPath);
 	dir.setFilter(QDir::Dirs			// List directories that match the filters. //TO DO: Check if directories are needed.
-		 //| QDir::Files						// List files.
+		 | QDir::Files						// List files.
 		 | QDir::NoSymLinks				// Do not list symbolic links (ignored by operating systems that don't support symbolic links).
 		 | QDir::NoDotAndDotDot			// Do not list the special entries "." and "..".
 		 | QDir::System);					// List system files (on Unix, FIFOs, sockets and device files are included; on Windows, .lnk files are included).
@@ -84,8 +84,39 @@ void listRecursively() {
 	}
 }
 
+//void scanDir(QDir dir, const QString& mask) { // Recursively iterate over all the files in a directory and its subdirectories in Qt @ https://stackoverflow.com/questions/8052460/recursively-iterate-over-all-the-files-in-a-directory-and-its-subdirectories-in/8057236 // Also: Recursively searching for files in the computer @ https://stackoverflow.com/questions/25639874/recursively-searching-for-files-in-the-computer
+void scanDir(QDir dir) { // Recursively iterate over all the files in a directory and its subdirectories in Qt @ https://stackoverflow.com/questions/8052460/recursively-iterate-over-all-the-files-in-a-directory-and-its-subdirectories-in/8057236 // Also: Recursively searching for files in the computer @ https://stackoverflow.com/questions/25639874/recursively-searching-for-files-in-the-computer
+	dir.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks);
+	//dir.setNameFilters(QStringList(mask));
+	//QStringList filters(mask);					//Set the name filters. Each name filter is a wildcard filter that understands * and ? wildcards.
+	//dir.setNameFilters(filters);
+
+	out << "Scanning: " << dir.path() << '\n';
+
+	QStringList fileList = dir.entryList();
+	for (int i=0; i<fileList.count(); i++)	{
+		if(fileList[i] != "main.nut" && fileList[i] != "info.nut") {
+			out << "Found file: " << fileList[i] << '\n';
+		}
+	}
+
+	dir.setFilter(QDir::AllDirs | QDir::NoDotAndDotDot | QDir::NoSymLinks);
+	QStringList dirList = dir.entryList();
+	for (int i=0; i<dirList.size(); ++i) {
+		QString newPath = QString("%1/%2").arg(dir.absolutePath()).arg(dirList.at(i));
+		//scanDir(QDir(newPath), mask);
+		scanDir(QDir(newPath));
+	}
+}
+
 int main() {
-//	listDirectories();
-//	listFilesInDirectory();
-	listRecursively();
+	//const QString mask = "*";
+	const QString mask = "*.cpp";
+
+	//dir.setFilter(QDir::Files | QDir::NoDotAndDotDot | QDir::NoSymLinks);
+	QStringList filters(mask);	//Set the name filters. Each name filter is a wildcard filter that understands * and ? wildcards.
+	QDir dir("/home/alex/rp/_stepik/c_cpp_multi-thread_programming");
+	dir.setNameFilters(filters);
+	//scanDir(dir, mask);
+	scanDir(dir);
 }
