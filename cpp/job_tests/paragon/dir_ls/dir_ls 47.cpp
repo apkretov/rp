@@ -2,13 +2,12 @@
 #include <QDirIterator>			// An iterator for directory entrylists.
 #include <QTextStream>			// A convenient interface for reading and writing QString text.
 #include <QDateTime>				// Date and time functions.
-#include <iostream>				// std::cerr, std::cin.get(). //TO DO: Substitute with Qt.
+#include <iostream>				// std::cerr, std::cin.get(). //TO DO: Remove it, if unnecessary.
 #include <exception>
 
 QTextStream out(stdout);		// Interface for writing QString text.
 
 void listRecursively(QDir, const QString&, const bool);
-QString retrieveMask(const QString&);
 
 //*********************************************************************************************************************************************************
 // main
@@ -31,7 +30,7 @@ int main() {
 
 		const QDir currentDir(".");											// The current directory.
 		const QString prompt = currentDir.absolutePath() + " >> ";	// The prompt with the current directory.
-		QString mask("*");														// All directories/files mask ('*' wildcard). Default.
+		QString mask("*");														// All directories/files mask ('*' wildcard).
 
 		const char* const badCommand = "Bad command!\n\n";				// A 'Bad command' comment.
 
@@ -44,8 +43,9 @@ int main() {
 			out << prompt;
 			out.flush();
 
-			if (fgets(line, sizeof(line), stdin) == NULL)		// Enter the tdir command and its parameters.
-				exit(0);														// Ctrl+Z pressed. Exit.
+			// Enter the tdir command and its parameters.
+			if (fgets(line, sizeof(line), stdin) == NULL)		// Ctrl+Z pressed. Exit.
+				exit(0);
 			if (strlen(line) < strlen(tdir)) {						// The first parameter must be the tdir command. First check it just by its length.
 				fprintf(stderr, badCommand);							// Bad command.
 				continue;
@@ -66,7 +66,6 @@ int main() {
 					listRecursively(currentDir, mask, true);		// The second parameter is a recursion key. List recursively.
 				else {
 					path = QString(pathRKey1);							// The second parameter is a path.
-					QString maskTest = retrieveMask(path);
 					listRecursively(QDir(path), mask, false);		// List without recursion. //TO DO: Check if a directory entered exists. //TO DO: Parse to cut out a mask, if any.
 				}
 				break;
@@ -109,24 +108,29 @@ int main() {
 // wildcards ('*', '?', [, ]). If there is any of those wildcards then that is a file mask.
 // TO DO: More comments on the function agruments and return values.
 //*********************************************************************************************************************************************************
-QString retrieveMask(const QString& path) {
-	const QString rightSlash('/');	// Linux directory separator.
-	const QString leftSlash('\\');	// Windows directory separator. //TO DO: Check a right slash in Windows.
-	QString mask{};
+//QString retrieveMask(const char* const path) {
+//const char* retrieveMask(const char* const path) {
+bool retrieveMask(const char* const path, const char* mask) {
+	//QString retrieveMask(const std::string path) {
+	using std::string;
+	const char rightSlash = '/';	// Linux directory separator.
+	const char leftSlash = '\\';	// Windows directory separator. //TO DO: Check a right slash in Windows.
 
-	QRegExp wildCards("[*?[]]");										// The wildcards ('*', '?', [, ]) to detect a file mask.
-	int wildCardPos = wildCards.indexIn(path);					// Get position of the first wildcard, or -1 if there was no match.
-	if (wildCardPos == -1)
-		return mask;														// No wildcards. return an empty mask.
+	string pathStr(path);			// Construct a path string to manipulate with.
+	string maskStr{};
 
-	int slashPosition = path.lastIndexOf(rightSlash);			// Find last occurrence of a slash in the path.
-	//ERROR: A path might be completely a mask.
-	if (slashPosition == -1)											// No slash found.
-		return mask;														// An empty mask.
+	std::size_t slashPosition = pathStr.rfind(rightSlash);	// Find last occurrence of a slash in the path.
+//	if (slashPosition != string::npos) {							// Continue, if found.
+//		maskStr = pathStr.substr(slashPosition);
+//		return true;
+//	} else
+//		return false;														// No mask.
+	if (slashPosition == string::npos)
+		return false;														// No mask.
 	else {																	// Continue, if found.
-		QString pathSlashed = path.mid(slashPosition + 1);		// The section of the path after the last slash.
-		////////////
-		return mask;
+		maskStr = pathStr.substr(slashPosition);
+		//////////
+		return true; ////////
 	}
 }
 

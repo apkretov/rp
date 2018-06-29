@@ -2,13 +2,12 @@
 #include <QDirIterator>			// An iterator for directory entrylists.
 #include <QTextStream>			// A convenient interface for reading and writing QString text.
 #include <QDateTime>				// Date and time functions.
-#include <iostream>				// std::cerr, std::cin.get(). //TO DO: Substitute with Qt.
+#include <iostream>				// std::cerr, std::cin.get(). //TO DO: Remove it, if unnecessary.
 #include <exception>
 
 QTextStream out(stdout);		// Interface for writing QString text.
 
 void listRecursively(QDir, const QString&, const bool);
-QString retrieveMask(const QString&);
 
 //*********************************************************************************************************************************************************
 // main
@@ -31,7 +30,7 @@ int main() {
 
 		const QDir currentDir(".");											// The current directory.
 		const QString prompt = currentDir.absolutePath() + " >> ";	// The prompt with the current directory.
-		QString mask("*");														// All directories/files mask ('*' wildcard). Default.
+		QString mask("*");														// All directories/files mask ('*' wildcard).
 
 		const char* const badCommand = "Bad command!\n\n";				// A 'Bad command' comment.
 
@@ -44,8 +43,9 @@ int main() {
 			out << prompt;
 			out.flush();
 
-			if (fgets(line, sizeof(line), stdin) == NULL)		// Enter the tdir command and its parameters.
-				exit(0);														// Ctrl+Z pressed. Exit.
+			// Enter the tdir command and its parameters.
+			if (fgets(line, sizeof(line), stdin) == NULL)		// Ctrl+Z pressed. Exit.
+				exit(0);
 			if (strlen(line) < strlen(tdir)) {						// The first parameter must be the tdir command. First check it just by its length.
 				fprintf(stderr, badCommand);							// Bad command.
 				continue;
@@ -66,7 +66,6 @@ int main() {
 					listRecursively(currentDir, mask, true);		// The second parameter is a recursion key. List recursively.
 				else {
 					path = QString(pathRKey1);							// The second parameter is a path.
-					QString maskTest = retrieveMask(path);
 					listRecursively(QDir(path), mask, false);		// List without recursion. //TO DO: Check if a directory entered exists. //TO DO: Parse to cut out a mask, if any.
 				}
 				break;
@@ -107,27 +106,20 @@ int main() {
 //*********************************************************************************************************************************************************
 // Retrieve a mask from the end of a path. A mask can be appended at the end of a path after the last slash (Linux /, Windows \). A mask contains
 // wildcards ('*', '?', [, ]). If there is any of those wildcards then that is a file mask.
-// TO DO: More comments on the function agruments and return values.
+// TO DO: More comments on the function agruments.
 //*********************************************************************************************************************************************************
-QString retrieveMask(const QString& path) {
-	const QString rightSlash('/');	// Linux directory separator.
-	const QString leftSlash('\\');	// Windows directory separator. //TO DO: Check a right slash in Windows.
-	QString mask{};
+QString retrieveMask(const char* const path) {
+//QString retrieveMask(const std::string path) {
+	using std::string;
+	const char rightSlash = '/'; // Linux directory separator.
+	const char leftSlash = '\\'; // Windows directory separator. //TO DO: Check a right slash in Windows.
 
-	QRegExp wildCards("[*?[]]");										// The wildcards ('*', '?', [, ]) to detect a file mask.
-	int wildCardPos = wildCards.indexIn(path);					// Get position of the first wildcard, or -1 if there was no match.
-	if (wildCardPos == -1)
-		return mask;														// No wildcards. return an empty mask.
+	string pathStr(path);
+	std::size_t found = pathStr.rfind(rightSlash);
+	if (found != string::npos)
+		;
 
-	int slashPosition = path.lastIndexOf(rightSlash);			// Find last occurrence of a slash in the path.
-	//ERROR: A path might be completely a mask.
-	if (slashPosition == -1)											// No slash found.
-		return mask;														// An empty mask.
-	else {																	// Continue, if found.
-		QString pathSlashed = path.mid(slashPosition + 1);		// The section of the path after the last slash.
-		////////////
-		return mask;
-	}
+	return QString(path);
 }
 
 //*********************************************************************************************************************************************************
@@ -146,12 +138,22 @@ void listRecursively(QDir dir, const QString& mask, const bool recursive) { //TO
 					  | QDir::NoDotAndDotDot	// Do not list the special entries "." and "..".
 					  | QDir::System);			// List system files (on Unix, FIFOs, sockets and device files are included; on Windows, .lnk files are included).
 
-	QStringList filters(mask);					//Set the name filters. Each name filter is a wildcard filter that understands wildcards.
+	QStringList filters(mask);					//Set the name filters. Each name filter is a wildcard filter that understands * and ? wildcards.
 	dir.setNameFilters(filters);
 
-	out << dir.absolutePath() << ":" << endl;														// Print the directory path atop the files contained.
-	QFileInfoList list = dir.entryInfoList();														// Print each file inside that directory.
+	//OFF if (recursive)
+	out << dir.absolutePath() << ":" << endl;				// In a recursive mode, print the directory path atop the files contained.
+
+	QFileInfoList list = dir.entryInfoList();				// Print each file inside that directory.
 	for (const auto& fileInfo : dir.entryInfoList()) {
+//		out << fileInfo.fileName() << '\t';					// File name.
+//		//OFF out << fileInfo.filePath() << '\t';			// File name.
+//		if (fileInfo.isFile())									// Print the sizes of files only but skip directories'.
+//			out << fileInfo.size() << '\t';
+//		else
+//			out << "<DIR>\t";
+//		out << fileInfo.lastModified().toString(Qt::SystemLocaleShortDate) << endl;	//	The last modification date in the short format used by the operating system.
+
 		if (fileInfo.isFile())																			// Print the sizes of files only but skip directories'.
 			out << fileInfo.size() << '\t';
 		else

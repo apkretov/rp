@@ -8,7 +8,6 @@
 QTextStream out(stdout);		// Interface for writing QString text.
 
 void listRecursively(QDir, const QString&, const bool);
-QString retrieveMask(const QString&);
 
 //*********************************************************************************************************************************************************
 // main
@@ -31,7 +30,7 @@ int main() {
 
 		const QDir currentDir(".");											// The current directory.
 		const QString prompt = currentDir.absolutePath() + " >> ";	// The prompt with the current directory.
-		QString mask("*");														// All directories/files mask ('*' wildcard). Default.
+		QString mask("*");														// All directories/files mask ('*' wildcard).
 
 		const char* const badCommand = "Bad command!\n\n";				// A 'Bad command' comment.
 
@@ -44,8 +43,9 @@ int main() {
 			out << prompt;
 			out.flush();
 
-			if (fgets(line, sizeof(line), stdin) == NULL)		// Enter the tdir command and its parameters.
-				exit(0);														// Ctrl+Z pressed. Exit.
+			// Enter the tdir command and its parameters.
+			if (fgets(line, sizeof(line), stdin) == NULL)		// Ctrl+Z pressed. Exit.
+				exit(0);
 			if (strlen(line) < strlen(tdir)) {						// The first parameter must be the tdir command. First check it just by its length.
 				fprintf(stderr, badCommand);							// Bad command.
 				continue;
@@ -66,7 +66,6 @@ int main() {
 					listRecursively(currentDir, mask, true);		// The second parameter is a recursion key. List recursively.
 				else {
 					path = QString(pathRKey1);							// The second parameter is a path.
-					QString maskTest = retrieveMask(path);
 					listRecursively(QDir(path), mask, false);		// List without recursion. //TO DO: Check if a directory entered exists. //TO DO: Parse to cut out a mask, if any.
 				}
 				break;
@@ -114,13 +113,7 @@ QString retrieveMask(const QString& path) {
 	const QString leftSlash('\\');	// Windows directory separator. //TO DO: Check a right slash in Windows.
 	QString mask{};
 
-	QRegExp wildCards("[*?[]]");										// The wildcards ('*', '?', [, ]) to detect a file mask.
-	int wildCardPos = wildCards.indexIn(path);					// Get position of the first wildcard, or -1 if there was no match.
-	if (wildCardPos == -1)
-		return mask;														// No wildcards. return an empty mask.
-
 	int slashPosition = path.lastIndexOf(rightSlash);			// Find last occurrence of a slash in the path.
-	//ERROR: A path might be completely a mask.
 	if (slashPosition == -1)											// No slash found.
 		return mask;														// An empty mask.
 	else {																	// Continue, if found.
