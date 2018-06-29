@@ -114,7 +114,8 @@ QString retrieveMask(const QString& path) {
 	const QString leftSlash('\\');	// Windows directory separator. //TO DO: Check a right slash in Windows.
 	QString mask{};
 
-	QRegExp wildCards("[*?[]]");										// The wildcards ('*', '?', [, ]) to detect a file mask.
+	//QRegExp wildCards("[*?[]]");										// The wildcards ('*', '?', [, ]) to detect a file mask.
+	QRegExp wildCards("[*]");										// The wildcards ('*', '?', [, ]) to detect a file mask.
 	int wildCardPos = wildCards.indexIn(path);					// Get position of the first wildcard, or -1 if there was no match.
 	if (wildCardPos == -1)
 		return mask;														// No wildcards. return an empty mask.
