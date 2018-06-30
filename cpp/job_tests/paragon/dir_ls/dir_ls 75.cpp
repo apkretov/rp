@@ -70,12 +70,7 @@ int main() {
 				else {
 					path = QString(pathRKey1);									// The second parameter is a path.
 					distinguishPathMask(path, mask);							// If included, retrieve a mask from the end of the path.
-					//listRecursively(QDir(path), mask, false);				// List without recursion. //TO DO: Check if a directory entered exists. //TO DO: Parse to cut out a mask, if any.
-					QDir dir(path);
-					if	(dir.exists())
-						listRecursively(dir, mask, false);				// List without recursion. //TO DO: Check if a directory entered exists. //TO DO: Parse to cut out a mask, if any.
-					else
-						;////////////
+					listRecursively(QDir(path), mask, false);				// List without recursion. //TO DO: Check if a directory entered exists. //TO DO: Parse to cut out a mask, if any.
 				}
 				break;
 			case 3: {																// All the three parameters entered.

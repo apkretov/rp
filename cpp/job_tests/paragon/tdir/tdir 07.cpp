@@ -5,10 +5,11 @@
 #include <iostream>		// std::cerr, std::cin.get(). //TO DO: Substitute with Qt.
 #include <exception>
 
-void listRecursively(QDir, const QString&, const bool);
 void distinguishPathMask(QString&, QString&);
+void checkPathAndList(const QString&, const QString&, const bool);
+void listRecursively(QDir, const QString&, const bool);
 
-const QString maskAll2("*");		// All directories/files mask ('*' wildcard).
+const QString maskAll("*");		// All directories/files mask ('*' wildcard).
 
 QTextStream out(stdout);			// Interface for writing QString text.
 
@@ -36,7 +37,7 @@ int main() {
 		const char* const badCommand = "Bad command!\n\n";				// A 'Bad command' comment.
 
 		out << "#PSG Coding Challenge" << endl								// Welcome. Abstract.
-			 << "dir/ls Utility Program" << endl << endl
+			 << tdir << " Utility Program" << endl << endl
 			 << "To list files and directories enter 'tdir [path/mask] [-r]' or tdir [-r] [path/mask]'." << endl
 			 << "To quit the program enter: Ctrl+C." << endl << endl;
 
@@ -62,20 +63,15 @@ int main() {
 
 			switch (paramsRead) {												// Parse the command line based on the number of parameters successfully read.
 			case 1:																	// One parameter entered. That must be the tdir command. List without recursion. //TO DO: Introduce an enumeration for cases.
-				listRecursively(QDir::current(), maskAll2, false);
+				listRecursively(QDir::current(), maskAll, false);
 				break;
 			case 2:																	// Two parameters entered. The second parameter can be either a path or a recursion key.
 				if (strcmp(pathRKey1, recurKey) == 0)						// Check if the second parameter is a recursion key or not.
-					listRecursively(QDir::current(), maskAll2, true);	// The second parameter is a recursion key. List recursively.
+					listRecursively(QDir::current(), maskAll, true);	// The second parameter is a recursion key. List recursively.
 				else {
 					path = QString(pathRKey1);									// The second parameter is a path.
 					distinguishPathMask(path, mask);							// If included, retrieve a mask from the end of the path.
-					//listRecursively(QDir(path), mask, false);				// List without recursion. //TO DO: Check if a directory entered exists. //TO DO: Parse to cut out a mask, if any.
-					QDir dir(path);
-					if	(dir.exists())
-						listRecursively(dir, mask, false);				// List without recursion. //TO DO: Check if a directory entered exists. //TO DO: Parse to cut out a mask, if any.
-					else
-						;////////////
+					checkPathAndList(path, mask, false);					// Check a path and list without recursion.
 				}
 				break;
 			case 3: {																// All the three parameters entered.
@@ -130,7 +126,7 @@ void distinguishPathMask(QString& path, QString& mask) {
 			break;										// The first wildcard found.
 	}
 	if (wildcardPos == -1) {
-		mask = maskAll2;								// No wildcard. No mask entered, just set '*'.
+		mask = maskAll;								// No wildcard. No mask entered, just set '*'.
 		return;
 	}
 
@@ -144,13 +140,17 @@ void distinguishPathMask(QString& path, QString& mask) {
 	}
 }
 
-////*********************************************************************************************************************************************************
-//// Validate a path if it exists.
-//// TO DO: More comments on the function agruments.
-////*********************************************************************************************************************************************************
-//bool pathExists(const QString& path) {
-/////////////////
-//}
+//*********************************************************************************************************************************************************
+// Check a path and list files and directories, if a path exists.
+// TO DO: More comments on the function agruments.
+//*********************************************************************************************************************************************************
+void checkPathAndList(const QString& path, const QString& mask, const bool recursive) {
+	QDir dir(path);
+	if	(dir.exists())													// Validate a path if it exists.
+		listRecursively(dir, mask, recursive);					// List.
+	else																	// No directory.
+		fprintf(stderr, "No such file or directory\n\n");	//TO DO: Substitute fprintf(stderr...) with a Qt counterpart for a QString: "tdir: cannot access 'ABC': No such file or directory\n\n"
+}
 
 //*********************************************************************************************************************************************************
 // List files recursively in the selected directory and all its subdirectories, if necessary.

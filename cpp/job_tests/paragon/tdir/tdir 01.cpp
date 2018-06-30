@@ -36,7 +36,7 @@ int main() {
 		const char* const badCommand = "Bad command!\n\n";				// A 'Bad command' comment.
 
 		out << "#PSG Coding Challenge" << endl								// Welcome. Abstract.
-			 << "dir/ls Utility Program" << endl << endl
+			 << tdir << " Utility Program" << endl << endl
 			 << "To list files and directories enter 'tdir [path/mask] [-r]' or tdir [-r] [path/mask]'." << endl
 			 << "To quit the program enter: Ctrl+C." << endl << endl;
 
@@ -74,8 +74,9 @@ int main() {
 					QDir dir(path);
 					if	(dir.exists())
 						listRecursively(dir, mask, false);				// List without recursion. //TO DO: Check if a directory entered exists. //TO DO: Parse to cut out a mask, if any.
-					else
-						;////////////
+					else { //
+						fprintf(stderr, "tdir: cannot access '////////////': No such file or directory"); //TO DO: Substitute fprintf(stderr...) with a Qt counterpart for QString.
+					}
 				}
 				break;
 			case 3: {																// All the three parameters entered.

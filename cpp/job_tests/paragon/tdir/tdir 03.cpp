@@ -5,8 +5,15 @@
 #include <iostream>		// std::cerr, std::cin.get(). //TO DO: Substitute with Qt.
 #include <exception>
 
+struct tdirParams {					// tdir command parameters.
+	QString path{};					// Path to a directory listed.
+	QString mask{};					// File search mask.
+	bool recursive{};					// Recursive listing flag.
+};
+
 void listRecursively(QDir, const QString&, const bool);
-void distinguishPathMask(QString&, QString&);
+//void distinguishPathMask(QString&, QString&);
+void distinguishPathMask(tdirParams&);
 
 const QString maskAll2("*");		// All directories/files mask ('*' wildcard).
 
@@ -29,14 +36,15 @@ int main() {
 														//		maximal space for each of them.
 		char pathRKey1[cmdLength];				// Either a path/mask or a recursion key (-r) (parameters 2 and 3) can be entered under these variables.
 		char pathRKey2[cmdLength];
-		QString path{};							// Path to a directory listed.
-		QString mask{};							// File mask.
+//		QString path{};							// Path to a directory listed.
+//		QString mask{};							// File mask.
+		tdirParams params;						// tdir command parameters.
 
 		const QString prompt = QDir::currentPath() + " >> ";			// The prompt with the current directory.
 		const char* const badCommand = "Bad command!\n\n";				// A 'Bad command' comment.
 
 		out << "#PSG Coding Challenge" << endl								// Welcome. Abstract.
-			 << "dir/ls Utility Program" << endl << endl
+			 << tdir << " Utility Program" << endl << endl
 			 << "To list files and directories enter 'tdir [path/mask] [-r]' or tdir [-r] [path/mask]'." << endl
 			 << "To quit the program enter: Ctrl+C." << endl << endl;
 
@@ -57,8 +65,8 @@ int main() {
 				continue;
 			}
 
-			path = "";																// Reset the path and the mask in each entry cycle.
-			mask = "";
+			params.path = "";														// Reset the path and the mask in each entry cycle.
+			params.mask = "";
 
 			switch (paramsRead) {												// Parse the command line based on the number of parameters successfully read.
 			case 1:																	// One parameter entered. That must be the tdir command. List without recursion. //TO DO: Introduce an enumeration for cases.
@@ -68,14 +76,14 @@ int main() {
 				if (strcmp(pathRKey1, recurKey) == 0)						// Check if the second parameter is a recursion key or not.
 					listRecursively(QDir::current(), maskAll2, true);	// The second parameter is a recursion key. List recursively.
 				else {
-					path = QString(pathRKey1);									// The second parameter is a path.
-					distinguishPathMask(path, mask);							// If included, retrieve a mask from the end of the path.
-					//listRecursively(QDir(path), mask, false);				// List without recursion. //TO DO: Check if a directory entered exists. //TO DO: Parse to cut out a mask, if any.
-					QDir dir(path);
+					params.path = QString(pathRKey1);						// The second parameter is a path.
+					distinguishPathMask(params);								// If included, retrieve a mask from the end of the path.
+					//listRecursively(QDir(path), mask, false);			// List without recursion. //TO DO: Check if a directory entered exists. //TO DO: Parse to cut out a mask, if any.
+					QDir dir(params.path);
 					if	(dir.exists())
-						listRecursively(dir, mask, false);				// List without recursion. //TO DO: Check if a directory entered exists. //TO DO: Parse to cut out a mask, if any.
-					else
-						;////////////
+						listRecursively(dir, mask, false);					// List without recursion. //TO DO: Check if a directory entered exists. //TO DO: Parse to cut out a mask, if any.
+					else																// Validate a path if it exists.
+						fprintf(stderr, "No such file or directory\n\n"); //TO DO: Substitute fprintf(stderr...) with a Qt counterpart for a QString: "tdir: cannot access 'ABC': No such file or directory\n\n"
 				}
 				break;
 			case 3: {																// All the three parameters entered.
@@ -101,7 +109,7 @@ int main() {
 					continue;
 				}
 
-				distinguishPathMask(path, mask);								// If included, retrieve a mask from the end of the path.
+				distinguishPathMask(params);									// If included, retrieve a mask from the end of the path.
 				listRecursively(QDir(path), mask, true);					// List recursively. //TO DO: Check if a directory entered exists. //TO DO: Parse to cut out a mask, if any.
 				break;
 			}
@@ -120,37 +128,37 @@ int main() {
 // file mask.
 // TO DO: More comments on the function agruments and return values.
 //*********************************************************************************************************************************************************
-void distinguishPathMask(QString& path, QString& mask) {
+void distinguishPathMask(tdirParams& params) {
 	const char wildcards[] = {'*', '?', '['};	// The wildcards to detect a file mask.
 
 	int wildcardPos{};
 	for (auto& wildcard : wildcards) {			// Find a wildcard to detect a file mask, if any.
-		wildcardPos = path.indexOf(wildcard);	// The first wildcard's position.
+		wildcardPos = params.path.indexOf(wildcard);	// The first wildcard's position.
 		if (wildcardPos > -1)
 			break;										// The first wildcard found.
 	}
 	if (wildcardPos == -1) {
-		mask = maskAll2;								// No wildcard. No mask entered, just set '*'.
+		params.mask = maskAll2;								// No wildcard. No mask entered, just set '*'.
 		return;
 	}
 
-	int slashPos = path.lastIndexOf(QDir::separator(), wildcardPos);	// Find the position of the a slash before the first wildcard.
+	int slashPos = params.path.lastIndexOf(QDir::separator(), wildcardPos);	// Find the position of the a slash before the first wildcard.
 	if (slashPos == -1) {															// No slash there.
-		mask = path;																	// The whole path is a mask.
-		path = QDir::currentPath();												// The path is supposed to be the current directory.
+		params.mask = params.path;																	// The whole path is a mask.
+		params.path = QDir::currentPath();												// The path is supposed to be the current directory.
 	} else {
-		mask = path.mid(slashPos + 1);											// Retrieve a mask that is the section of the path after the last slash.
-		path = path.left(slashPos);												// Cut the mask from the path.
+		params.mask = params.path.mid(slashPos + 1);											// Retrieve a mask that is the section of the path after the last slash.
+		params.path = params.path.left(slashPos);												// Cut the mask from the path.
 	}
 }
 
-////*********************************************************************************************************************************************************
-//// Validate a path if it exists.
-//// TO DO: More comments on the function agruments.
-////*********************************************************************************************************************************************************
-//bool pathExists(const QString& path) {
-/////////////////
-//}
+void validateAndList(const QString& path, const QString& mask, const bool recursive) {
+	QDir dir(path);
+	if	(dir.exists())
+		listRecursively(dir, mask, false);					// List without recursion. //TO DO: Check if a directory entered exists. //TO DO: Parse to cut out a mask, if any.
+	else																// Validate a path if it exists.
+		fprintf(stderr, "No such file or directory\n\n"); //TO DO: Substitute fprintf(stderr...) with a Qt counterpart for a QString: "tdir: cannot access 'ABC': No such file or directory\n\n"
+}
 
 //*********************************************************************************************************************************************************
 // List files recursively in the selected directory and all its subdirectories, if necessary.
