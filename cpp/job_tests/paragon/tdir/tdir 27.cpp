@@ -9,10 +9,9 @@ void distinguishPathMask(QString&, QString&);
 void checkPathAndList(const QString&, const QString&, const bool);
 void listRecursively(QDir, const QString&, const bool);
 
-const char* const cmdTdir{"tdir"};	// The tdir command.
-const QString maskAll("*");			// All directories/files mask ('*' wildcard).
+const QString maskAll("*");		// All directories/files mask ('*' wildcard).
 
-QTextStream out(stdout);				// Interface for writing QString text.
+QTextStream out(stdout);			// Interface for writing QString text.
 
 //*********************************************************************************************************************************************************
 // main
@@ -20,92 +19,94 @@ QTextStream out(stdout);				// Interface for writing QString text.
 //*********************************************************************************************************************************************************
 int main() {
 	try {
-		enum struct argumentCount : int {tdir_exit = 1, tdir_path, tdir_path_rkey};	// Acceptable number of arguments: 1) tdir, 2) tdir path/mask, 3) tdir path/mask -r.
-		const char* const recurKey{"-r"};															// The recursion key.
-		const char* const cmdExit{"exit"};															// The exit command.
-		const QString prompt = QDir::toNativeSeparators(QDir::currentPath()) + " >> ";// A prompt with the current directory.
+		enum struct argumentCount : int {tdir_exit = 1, tdir_path, tdir_path_rkey}; // Acceptable number of arguments: 1) tdir, 2) tdir path/mask, 3) tdir path/mask -r.
+		const char* const cmdTdir{"tdir"};	// The tdir command.
+		const char* const recurKey{"-r"};	// The recursion key.
+		const char* const cmdExit{"exit"};		// The exit command. //TO DO: Introduce this command.
 
-		constexpr unsigned cmdLength{256};							// The command's maximal lengh.
-		char line[cmdLength]{};											// The line entered: 'tdir [path/mask] [-r]' or 'exit'.
-		char command[cmdLength]{};										// Either of the three arguments might be of the maximal lenght. Reserve a maximal space for them.
-		char pathRKey1[cmdLength]{}, pathRKey2[cmdLength]{};	// Either a path/mask or a recursion key (-r) (arguments 2 and 3) can be entered under these variables.
-		char redundantArgumnt[cmdLength]{};							// A redundant agrument as an indication of a wrong number of arguments entered.
-		bool recursive1{}, recursive2{};								// Respective recursion key flags (for arguments 2 and 3).
-		QString path;														// Path to a directory listed.
-		QString mask;														// File mask.
+		constexpr unsigned cmdLength{256};	// The command maximal lengh.
+		char line[cmdLength];					// The line entered: tdir [path/mask] [-r]
+		char command[cmdLength];				// Either of the three arguments entered might be of the maximal lenght. That's why reserve the
+														//		maximal space for each of them.
+		char pathRKey1[cmdLength];				// Either a path/mask or a recursion key (-r) (arguments 2 and 3) can be entered under these variables.
+		char pathRKey2[cmdLength];
+		QString path;								// Path to a directory listed.
+		QString mask;								// File mask.
 
-		out  << "The " << cmdTdir << " File Listing Utility Program" << endl						//Welcome. Abstract.
-			 << "List files:\t'tdir [path/mask] [-r]', 'tdir [-r] [path/mask]'" << endl		//TO DO: Print the maximal length restriction.
-			 << "Quit program:\t'" << cmdExit << "'" << endl << endl;
+		const QString prompt = QDir::toNativeSeparators(QDir::currentPath()) + " >> ";	// A prompt with the current directory.
+		//const char* const badCommand = "Bad command!\n\n";											// A 'Bad command' comment.
 
-		while (1) {																		// In an endless loop, keep entering 'tdir [path/mask] [-r]' to list files and directories or 'Ctrl+C' to quit.
-			out << prompt;																// Print the prompt with the current directory in each cycle.
+		out << "#PSG Coding Challenge" << endl															// Welcome. Abstract.
+			 << cmdTdir << " Utility Program" << endl << endl
+			 << "To list files and directories enter:" << endl
+			 << "'tdir [path/mask] [-r]' or 'tdir [-r] [path/mask]'." << endl
+			 << "To quit the program enter: Ctrl+C." << endl << endl;
+
+		while (1) {																	// In an endless loop, keep entering 'tdir [path/mask] [-r]' to list files and directories or 'Ctrl+C' to quit.
+			out << prompt;															// Print the prompt with the current directory in each cycle.
 			out.flush();
 
-			if (fgets(line, sizeof(line), stdin) == nullptr) {				// Enter command arguments.
+			if (fgets(line, sizeof(line), stdin) == nullptr) {			// Enter command arguments.
 				perror("Error reading characters entered");
-				exit(EXIT_SUCCESS);													// Exit on an error.
+				exit(EXIT_SUCCESS);												// Exit on an error.
 			}
-
-			int argumentsRead = sscanf(line, "%s %s %s %s", command, pathRKey1, pathRKey2, redundantArgumnt);  // Get the number of successfully read arguments. //TO DO: Use sscan_s instead.
-			if (argumentsRead == EOF || argumentsRead == 0) {						// Input failure.
+			int argumentsRead = sscanf(line, "%s %s %s", command, pathRKey1, pathRKey2);  //Read arguments. Get the number of them successfully read. //TO DO: Use sscan_s instead. //TO DO: Restrict the number of arguments to 3.
+			if (argumentsRead == EOF || argumentsRead == 0) {			// Input failure.
 				fprintf(stderr, "No valid input!\n\n");
 				continue;
-			} else if (argumentsRead > (int)argumentCount::tdir_path_rkey) {	// Redundant agruments entered.
-				fprintf(stderr, "Command not found\n\n", command);					// Command not found.
-				continue;
 			}
 
-			switch (argumentsRead) {												// Parse the command line based on the number of arguments successfully read.
-			case (int)argumentCount::tdir_exit :								// One argument entered. That must be a tdir command or an exit one.
-				if (strcmp(command, cmdExit) == 0)								// Is it an exit command?
+			switch (argumentsRead) {											// Parse the command line based on the number of arguments successfully read.
+			case (int)argumentCount::tdir_exit :							// One argument entered. That must be a tdir command or an exit one.
+				if (strcmp(command, cmdExit) == 0)							// Is it an exit command?
 					exit(EXIT_SUCCESS);
-				else if (strcmp(command, cmdTdir) != 0) {						// Check a tdir command otherwise.
-					fprintf(stderr, "%s: command not found\n\n", command);// Command not found.
+				if (strcmp(command, cmdTdir) != 0) {						// Check a tdir command otherwise.
+					//fprintf(stderr, badCommand);								// Bad command.
+					fprintf(stderr, "%s: command not found\n\n", command);				// Command not found.
 					continue;
-				} else
-					listRecursively(QDir::current(), maskAll, false);		// List without recursion.
+				}
+				listRecursively(QDir::current(), maskAll, false);		// List without recursion.
 				break;
-
-			case (int)argumentCount::tdir_path:									// Two arguments entered. The second argument can be either a path or a recursion key.
-				if (strcmp(pathRKey1, recurKey) == 0)							// Check if the second argument is a recursion key or not.
-					listRecursively(QDir::current(), maskAll, true);		// The second argument is a recursion key. List recursively.
+			case (int)argumentCount::tdir_path:								// Two arguments entered. The second argument can be either a path or a recursion key.
+				if (strcmp(pathRKey1, recurKey) == 0)						// Check if the second argument is a recursion key or not.
+					listRecursively(QDir::current(), maskAll, true);	// The second argument is a recursion key. List recursively.
 				else {
-					path = QString(pathRKey1);										// The second argument is a path.
-					distinguishPathMask(path, mask);								// If included, retrieve a mask from the end of the path.
-					checkPathAndList(path, mask, false);						// Check the path and list without recursion.
+					path = QString(pathRKey1);									// The second argument is a path.
+					distinguishPathMask(path, mask);							// If included, retrieve a mask from the end of the path.
+					checkPathAndList(path, mask, false);					// Check the path and list without recursion.
 				}
 				break;
-
-			case (int)argumentCount::tdir_path_rkey: {						// All the three arguments entered.
-				if (strcmp(pathRKey1, pathRKey2) == 0) {						// The second and the third arguments must not be the same.
+			case (int)argumentCount::tdir_path_rkey: {					// All the three arguments entered.
+				if (strcmp(pathRKey1, pathRKey2) == 0) {					// The second and the third arguments must not be the same.
 					fprintf(stderr, "The second and the third arguments must not be the same!\n\n"); // Bad command.
 					continue;
 				}
 
-				if (strcmp(pathRKey1, recurKey) == 0)							// Check if the second argument is a recursion key or not.
-					recursive1 = true;												// The second argument is a recursion key. List recursively.
+				bool recursive1 = false;										// Check if the second argument is a recursion key or not.
+				if (strcmp(pathRKey1, recurKey) == 0)
+					recursive1 = true;											// The second argument is a recursion key. List recursively.
 				else
-					path = QString(pathRKey1);										// The second argument is a path.
+					path = QString(pathRKey1);									// The second argument is a path.
 
-				if (strcmp(pathRKey2, recurKey) == 0)							// Check if the third argument is a recursion key or not.
-					recursive2 = true;												// The third argument a recursion key. List recursively.
+				bool recursive2 = false;										// Check if the third argument is a recursion key or not.
+				if (strcmp(pathRKey2, recurKey) == 0)
+					recursive2 = true;											// The third argument a recursion key. List recursively.
 				else
-					path = QString(pathRKey2);										// The third argument is a path.
+					path = QString(pathRKey2);									// The third argument is a path.
 
-				if (!(recursive1 || recursive2)) {								// Neither the second nor the third argument is a recursion key.
+				if (!(recursive1 || recursive2)) {							// Neither the second nor the third argument is a recursion key.
 					fprintf(stderr, "Neither the second argument nor the third one is a recursion key!\n\n"); // Bad command. //TO DO: Improve this warning.
 					continue;
 				}
 
-				distinguishPathMask(path, mask);									// If included, retrieve a mask from the end of the path.
-				checkPathAndList(path, mask, true);								// Check the path and list recursively.
+				distinguishPathMask(path, mask);								// If included, retrieve a mask from the end of the path.
+				checkPathAndList(path, mask, true);							// Check the path and list recursively.
 				break;
 			}
 			}
 		}
 	}
-	catch(const std::exception& exc) {											// Catch and dislplay an exception.
+	catch(const std::exception exc) {										// Catch and dislplay an exception.
 		std::cerr << "An exception occured: " << exc.what() << std::endl;
 	}
 	return 0;
@@ -150,7 +151,7 @@ void checkPathAndList(const QString& path, const QString& mask, const bool recur
 	if	(dir.exists())													// Validate a path if it exists.
 		listRecursively(dir, mask, recursive);					// List.
 	else																	// No directory.
-		fprintf(stderr, "%s: cannot access '%s': No such file or directory\n\n", cmdTdir, path.toStdString().c_str());
+		fprintf(stderr, "No such file or directory\n\n");	//TO DO: Substitute fprintf(stderr...) with a Qt counterpart for a QString: "tdir: cannot access 'ABC': No such file or directory\n\n"
 }
 
 //*********************************************************************************************************************************************************

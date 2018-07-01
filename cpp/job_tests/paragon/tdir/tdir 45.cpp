@@ -47,12 +47,13 @@ int main() {
 				exit(EXIT_SUCCESS);													// Exit on an error.
 			}
 
-			int argumentsRead = sscanf(line, "%s %s %s %s", command, pathRKey1, pathRKey2, redundantArgumnt);  // Get the number of successfully read arguments. //TO DO: Use sscan_s instead.
-			if (argumentsRead == EOF || argumentsRead == 0) {						// Input failure.
+			int argumentsRead = sscanf(line, "%s %s %s %s", command, pathRKey1, pathRKey2, redundantArgumnt);  // Get the number of successfully read arguments. //TO DO: Use sscan_s instead. //TO DO: Restrict the number of arguments to 3.
+			if (argumentsRead == EOF || argumentsRead == 0) {				// Input failure. //TO DO: Include these two constants into enum and switch.
 				fprintf(stderr, "No valid input!\n\n");
 				continue;
-			} else if (argumentsRead > (int)argumentCount::tdir_path_rkey) {	// Redundant agruments entered.
-				fprintf(stderr, "Command not found\n\n", command);					// Command not found.
+			} else if (argumentsRead > (int)argumentCount::tdir_path_rkey) { // A redundant number of agruments entered.
+				//fprintf(stderr, "A redundant number of agruments entered! The maximum is %d.\n\n", (int)argumentCount::tdir_path_rkey);
+				fprintf(stderr, "Command not found\n\n", command);			// Command not found.
 				continue;
 			}
 

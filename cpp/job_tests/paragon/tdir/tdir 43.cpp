@@ -25,14 +25,14 @@ int main() {
 		const char* const cmdExit{"exit"};															// The exit command.
 		const QString prompt = QDir::toNativeSeparators(QDir::currentPath()) + " >> ";// A prompt with the current directory.
 
-		constexpr unsigned cmdLength{256};							// The command's maximal lengh.
-		char line[cmdLength]{};											// The line entered: 'tdir [path/mask] [-r]' or 'exit'.
-		char command[cmdLength]{};										// Either of the three arguments might be of the maximal lenght. Reserve a maximal space for them.
-		char pathRKey1[cmdLength]{}, pathRKey2[cmdLength]{};	// Either a path/mask or a recursion key (-r) (arguments 2 and 3) can be entered under these variables.
-		char redundantArgumnt[cmdLength]{};							// A redundant agrument as an indication of a wrong number of arguments entered.
-		bool recursive1{}, recursive2{};								// Respective recursion key flags (for arguments 2 and 3).
-		QString path;														// Path to a directory listed.
-		QString mask;														// File mask.
+		constexpr unsigned cmdLength{256};		// The command's maximal lengh.
+		char line[cmdLength]{};						// The line entered: 'tdir [path/mask] [-r]' or 'exit'.
+		char command[cmdLength]{};					// Either of the three arguments might be of the maximal lenght. Reserve a maximal space for them.
+		char pathRKey1[cmdLength]{};				// Either a path/mask or a recursion key (-r) (arguments 2 and 3) can be entered under these variables.
+		char pathRKey2[cmdLength]{};
+		QString path;									// Path to a directory listed.
+		QString mask;									// File mask.
+		bool recursive1{}, recursive2{};			// Recursion key flags.
 
 		out  << "The " << cmdTdir << " File Listing Utility Program" << endl						//Welcome. Abstract.
 			 << "List files:\t'tdir [path/mask] [-r]', 'tdir [-r] [path/mask]'" << endl		//TO DO: Print the maximal length restriction.
@@ -46,13 +46,9 @@ int main() {
 				perror("Error reading characters entered");
 				exit(EXIT_SUCCESS);													// Exit on an error.
 			}
-
-			int argumentsRead = sscanf(line, "%s %s %s %s", command, pathRKey1, pathRKey2, redundantArgumnt);  // Get the number of successfully read arguments. //TO DO: Use sscan_s instead.
-			if (argumentsRead == EOF || argumentsRead == 0) {						// Input failure.
+			int argumentsRead = sscanf(line, "%s %s %s", command, pathRKey1, pathRKey2);  //Read arguments. Get the number of them successfully read. //TO DO: Use sscan_s instead. //TO DO: Restrict the number of arguments to 3.
+			if (argumentsRead == EOF || argumentsRead == 0) {				// Input failure. //TO DO: Include these two constants into enum and switch.
 				fprintf(stderr, "No valid input!\n\n");
-				continue;
-			} else if (argumentsRead > (int)argumentCount::tdir_path_rkey) {	// Redundant agruments entered.
-				fprintf(stderr, "Command not found\n\n", command);					// Command not found.
 				continue;
 			}
 

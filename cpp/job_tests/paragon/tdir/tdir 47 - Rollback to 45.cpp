@@ -20,10 +20,10 @@ QTextStream out(stdout);				// Interface for writing QString text.
 //*********************************************************************************************************************************************************
 int main() {
 	try {
-		enum struct argumentCount : int {tdir_exit = 1, tdir_path, tdir_path_rkey};	// Acceptable number of arguments: 1) tdir, 2) tdir path/mask, 3) tdir path/mask -r.
-		const char* const recurKey{"-r"};															// The recursion key.
-		const char* const cmdExit{"exit"};															// The exit command.
-		const QString prompt = QDir::toNativeSeparators(QDir::currentPath()) + " >> ";// A prompt with the current directory.
+		enum struct argumentCount : int {empty, tdir_exit, tdir_path, tdir_path_rkey};	// Acceptable number of arguments: 1) tdir, 2) tdir path/mask, 3) tdir path/mask -r.
+		const char* const recurKey{"-r"};																// The recursion key.
+		const char* const cmdExit{"exit"};																// The exit command.
+		const QString prompt = QDir::toNativeSeparators(QDir::currentPath()) + " >> ";	// A prompt with the current directory.
 
 		constexpr unsigned cmdLength{256};							// The command's maximal lengh.
 		char line[cmdLength]{};											// The line entered: 'tdir [path/mask] [-r]' or 'exit'.
@@ -48,15 +48,20 @@ int main() {
 			}
 
 			int argumentsRead = sscanf(line, "%s %s %s %s", command, pathRKey1, pathRKey2, redundantArgumnt);  // Get the number of successfully read arguments. //TO DO: Use sscan_s instead.
-			if (argumentsRead == EOF || argumentsRead == 0) {						// Input failure.
-				fprintf(stderr, "No valid input!\n\n");
-				continue;
-			} else if (argumentsRead > (int)argumentCount::tdir_path_rkey) {	// Redundant agruments entered.
-				fprintf(stderr, "Command not found\n\n", command);					// Command not found.
-				continue;
-			}
+//			if (argumentsRead == EOF || argumentsRead == 0) {				// Input failure.
+//				fprintf(stderr, "No valid input!\n\n");
+//				continue;
+//			} else if (argumentsRead > (int)argumentCount::tdir_path_rkey) { // A redundant number of agruments entered.
+//				fprintf(stderr, "Command not found\n\n", command);			// Command not found.
+//				continue;
+//			}
 
 			switch (argumentsRead) {												// Parse the command line based on the number of arguments successfully read.
+			case EOF:																	// Input failure.
+			case (int)argumentCount::empty :
+				fprintf(stderr, "No valid input!\n\n");
+				continue;
+				break;
 			case (int)argumentCount::tdir_exit :								// One argument entered. That must be a tdir command or an exit one.
 				if (strcmp(command, cmdExit) == 0)								// Is it an exit command?
 					exit(EXIT_SUCCESS);
