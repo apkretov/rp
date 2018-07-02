@@ -1,4 +1,3 @@
-/*
 #include <QDir> // Access to directory structures and their contents.
 #include <QDirIterator> // An iterator for directory entrylists.
 #include <QTextStream> // A convenient interface for reading and writing QString text.
@@ -42,7 +41,7 @@ int main(int argc, char** argv) {
 				if (!recursive) { // Has not -r been entered before?
 					recursive = true;
 					continue;
-				} else { // Prevent multiple -r.
+				} else { // Prevent more than one -r.
 					fprintf(stderr, "Only one -r can be entered.\n\n");
 					return 0;
 				}
@@ -229,4 +228,3 @@ void listRecursively(QDir dir, const QString& mask, const bool recursive) { //TO
 		}
 	}
 }
-*/
