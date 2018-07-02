@@ -14,11 +14,8 @@ const QString maskAll("*");			// All directories/files mask ('*' wildcard).
 QTextStream out(stdout);				// Interface for writing QString text.
 
 //*********************************************************************************************************************************************************
-// The main function.
-// In an endless loop, keep entering 'tdir [path/mask] [-r]' or 'tdir [-r] [path/mask]' to list files.
-// Exit the program by an 'exit' command.
-// Before lising files, the tdir command and its arguments ([path/mask] [-r]) are validated.
-// Files are listed from a single directory or recursively from its subdirectories given the '-r' agrument.
+// main
+// TO DO: Comment.
 //*********************************************************************************************************************************************************
 int main() {
 	try {
@@ -40,7 +37,7 @@ int main() {
 			 << "List files:\t'tdir [path/mask] [-r]' or 'tdir [-r] [path/mask]'" << endl
 			 << "Quit program:\t'" << cmdExit << "'" << endl << endl;
 
-		while (1) {																				// In an endless loop, keep entering 'tdir [path/mask] [-r]' or 'tdir [-r] [path/mask]' to list files.
+		while (1) {																				// In an endless loop, keep entering 'tdir [path/mask] [-r]' to list files and directories or 'Ctrl+C' to quit.
 			out << prompt;																		// Print the prompt with the current directory in each cycle.
 			out.flush();
 			path = "";																			// Reset path and mask in each cycle.

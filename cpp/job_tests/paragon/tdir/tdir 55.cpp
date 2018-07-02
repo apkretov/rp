@@ -2,6 +2,7 @@
 #include <QDirIterator>	// An iterator for directory entrylists.
 #include <QTextStream>	// A convenient interface for reading and writing QString text.
 #include <QDateTime>		// Date and time functions.
+#include <iostream>		// std::cerr, std::cin.get(). //TO DO: Substitute with Qt.
 #include <exception>
 
 void distinguishPathMask(QString&, QString&);
@@ -14,15 +15,12 @@ const QString maskAll("*");			// All directories/files mask ('*' wildcard).
 QTextStream out(stdout);				// Interface for writing QString text.
 
 //*********************************************************************************************************************************************************
-// The main function.
-// In an endless loop, keep entering 'tdir [path/mask] [-r]' or 'tdir [-r] [path/mask]' to list files.
-// Exit the program by an 'exit' command.
-// Before lising files, the tdir command and its arguments ([path/mask] [-r]) are validated.
-// Files are listed from a single directory or recursively from its subdirectories given the '-r' agrument.
+// main
+// TO DO: Comment.
 //*********************************************************************************************************************************************************
 int main() {
 	try {
-		enum struct wordCount : int {tdir_exit = 1, tdir_path, tdir_path_rkey};			// Acceptable number of input words: 1) tdir/exit, 2) tdir path/mask, 3) tdir path/mask -r.
+		enum struct wordCount : int {tdir_exit = 1, tdir_path, tdir_path_rkey};	// Acceptable number of command words: 1) tdir/exit, 2) tdir path/mask, 3) tdir path/mask -r.
 		const char* const recurKey{"-r"};															// The recursion key.
 		const char* const cmdExit{"exit"};															// The exit command.
 		const QString prompt = QDir::toNativeSeparators(QDir::currentPath()) + " >> ";// A prompt with the current directory.
@@ -36,11 +34,11 @@ int main() {
 		QString path;														// Path to a directory listed.
 		QString mask;														// File mask.
 
-		out  << "The " << cmdTdir << " File Listing Utility Program" << endl	// The introduction.
-			 << "List files:\t'tdir [path/mask] [-r]' or 'tdir [-r] [path/mask]'" << endl
+		out  << "The " << cmdTdir << " File Listing Utility Program" << endl					// The introduction.
+			 << "List files:\t'tdir [path/mask] [-r]' or 'tdir [-r] [path/mask]'" << endl	//TO DO: Print the maximal length restriction.
 			 << "Quit program:\t'" << cmdExit << "'" << endl << endl;
 
-		while (1) {																				// In an endless loop, keep entering 'tdir [path/mask] [-r]' or 'tdir [-r] [path/mask]' to list files.
+		while (1) {																				// In an endless loop, keep entering 'tdir [path/mask] [-r]' to list files and directories or 'Ctrl+C' to quit.
 			out << prompt;																		// Print the prompt with the current directory in each cycle.
 			out.flush();
 			path = "";																			// Reset path and mask in each cycle.
@@ -60,10 +58,10 @@ int main() {
 			if (strcmp(command, cmdExit) == 0)											// The first word must be tdir or exit. Check exit first.
 				exit(EXIT_SUCCESS);															// Exit.
 			else if (strcmp(command, cmdTdir) != 0) {									// Check a tdir command otherwise.
-				fprintf(stderr, "%s: command not found.\n\n", command);			// Command not found.
+				fprintf(stderr, "%s: command not found\n\n", command);			// Command not found.
 				continue;
-			} else if (wordsRead > (int)wordCount::tdir_path_rkey) {				// Wrong agruments entered or redundant spaces in between..
-				fprintf(stderr, "Wrong agruments entered or redundant spaces in between.\n\n");
+			} else if (wordsRead > (int)wordCount::tdir_path_rkey) {				// Redundant tdir arguments entered. //TO DO: Check the first word. If that is tdir then comment on its wrong arguments otherwise on a wrong command.
+				fprintf(stderr, "Too many agruments entered or redundant spaces in between.\n\n");
 				continue;
 			}
 
@@ -84,7 +82,7 @@ int main() {
 
 			case (int)wordCount::tdir_path_rkey: {										// Three words entered.
 				if (strcmp(pathRKey1, pathRKey2) == 0) {								// The second and the third words must not be the same.
-					fprintf(stderr, "Wrong agruments are entered or agruments 1 and 2 are the same.\n\n");
+					fprintf(stderr, "The second and the third words must not be the same!\n\n"); // Bad command.
 					continue;
 				}
 
@@ -98,8 +96,8 @@ int main() {
 				else
 					path = QString(pathRKey2);												// The third word is a path.
 
-				if (!(recursive1 || recursive2)) {										// Neither of the two agruments is a recursion key.
-					fprintf(stderr, "Wrong agruments are entered or neither of the two agruments is -r.\n\n");
+				if (!(recursive1 || recursive2)) {										// Neither the second nor the third word is a recursion key.
+					fprintf(stderr, "Neither the second argument nor the third one is a recursion key!\n\n"); // Bad command. //TO DO: Improve this warning.
 					continue;
 				}
 
@@ -111,7 +109,7 @@ int main() {
 		}
 	}
 	catch(const std::exception& exc) {													// Catch and dislplay an exception.
-		fprintf(stderr, "An exception occured: %s\n\n", exc.what());
+		std::cerr << "An exception occured: " << exc.what() << std::endl;
 	}
 	return 0;
 }

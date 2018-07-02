@@ -15,99 +15,71 @@ QTextStream out(stdout);				// Interface for writing QString text.
 
 //*********************************************************************************************************************************************************
 // The main function.
-// In an endless loop, keep entering 'tdir [path/mask] [-r]' or 'tdir [-r] [path/mask]' to list files.
-// Exit the program by an 'exit' command.
+// In the command line, enter 'tdir [path/mask] [-r]' or 'tdir [-r] [path/mask]' to list files.
 // Before lising files, the tdir command and its arguments ([path/mask] [-r]) are validated.
 // Files are listed from a single directory or recursively from its subdirectories given the '-r' agrument.
 //*********************************************************************************************************************************************************
-int main() {
+int main(int argc, char** argv) {
 	try {
-		enum struct wordCount : int {tdir_exit = 1, tdir_path, tdir_path_rkey};			// Acceptable number of input words: 1) tdir/exit, 2) tdir path/mask, 3) tdir path/mask -r.
+		enum struct wordCount : int { tdir = 1, tdir_path, tdir_path_rkey };				// Acceptable number of input words: 1) tdir, 2) tdir path/mask, 3) tdir path/mask -r.
+		enum struct args : int { pathRKey1 = 1, pathRKey2 };									// The path / recursion key agrument indexes of the main function.
 		const char* const recurKey{"-r"};															// The recursion key.
-		const char* const cmdExit{"exit"};															// The exit command.
 		const QString prompt = QDir::toNativeSeparators(QDir::currentPath()) + " >> ";// A prompt with the current directory.
 
 		constexpr unsigned cmdLength{256};							// The command's maximal lengh.
-		char line[cmdLength]{};											// The line entered: 'tdir [path/mask] [-r]' or 'exit'.
-		char command[cmdLength]{};										// Either of the three words might be of the maximal lenght. Reserve a maximal space for them.
-		char pathRKey1[cmdLength]{}, pathRKey2[cmdLength]{};	// Either a path/mask or a recursion key (-r) (words 2 and 3) can be entered under these variables.
-		char redundant[cmdLength]{};									// A redundant word as an indication of a wrong number of words entered.
 		bool recursive1{}, recursive2{};								// Respective recursion key flags (for words 2 and 3).
 		QString path;														// Path to a directory listed.
 		QString mask;														// File mask.
 
-		out  << "The " << cmdTdir << " File Listing Utility Program" << endl	// The introduction.
-			 << "List files:\t'tdir [path/mask] [-r]' or 'tdir [-r] [path/mask]'" << endl
-			 << "Quit program:\t'" << cmdExit << "'" << endl << endl;
+		out << "argc: " << argc << endl;
+		for (int i = 0; i < argc; i++)
+			out << "argv[" << i << "]: " << argv[i] << endl;
 
-		while (1) {																				// In an endless loop, keep entering 'tdir [path/mask] [-r]' or 'tdir [-r] [path/mask]' to list files.
-			out << prompt;																		// Print the prompt with the current directory in each cycle.
-			out.flush();
-			path = "";																			// Reset path and mask in each cycle.
-			mask = "";
+		if (argc > (int)wordCount::tdir_path_rkey) {								// Wrong agruments entered or redundant spaces in between..
+			fprintf(stderr, "Wrong agruments entered or redundant spaces in between.\n\n");
+			return 0;
+		}
 
-			if (fgets(line, sizeof(line), stdin) == nullptr) {						// Read a command.
-				perror("Error reading characters entered");
-				exit(EXIT_SUCCESS);															// Exit on an error.
+		switch (argc) {																	// Parse the command line based on the number of words successfully read.
+		case (int)wordCount::tdir:														// One word entered. That must be a tdir or exit command.
+			listRecursively(QDir::current(), maskAll, false);					// List without recursion.
+			break;
+
+		case (int)wordCount::tdir_path:												// Two words entered. The second word can be either a path or a recursion key.
+			if (strcmp(argv[(int)args::pathRKey1], recurKey) == 0)			// Check if the second word is a recursion key or not.
+				listRecursively(QDir::current(), maskAll, true);				// The second word is a recursion key. List recursively.
+			else {
+				path = QString(pathRKey1);												// The second word is a path.
+				distinguishPathMask(path, mask);										// If included, retrieve a mask from the end of the path.
+				checkPathAndList(path, mask, false);								// Check the path and list without recursion.
+			}
+			break;
+
+		case (int)wordCount::tdir_path_rkey: {										// Three words entered.
+			if (strcmp(pathRKey1, pathRKey2) == 0) {								// The second and the third words must not be the same.
+				fprintf(stderr, "Wrong agruments are entered or agruments 1 and 2 are the same.\n\n");
+				return 0;
 			}
 
-			int wordsRead = sscanf(line, "%s %s %s %s", command, pathRKey1, pathRKey2, redundant);  // Get the number of successfully read words. //TO DO: Use sscan_s instead.
-			if (wordsRead == EOF || wordsRead == 0) {									// An input failure.
-				fprintf(stderr, "No valid input!\n\n");
-				continue;
+			if (strcmp(pathRKey1, recurKey) == 0)									// Check if the second word is a recursion key or not.
+				recursive1 = true;														// The second word is a recursion key. List recursively.
+			else
+				path = QString(pathRKey1);												// The second word is a path.
+
+			if (strcmp(pathRKey2, recurKey) == 0)									// Check if the third word is a recursion key or not.
+				recursive2 = true;														// The third word a recursion key. List recursively.
+			else
+				path = QString(pathRKey2);												// The third word is a path.
+
+			if (!(recursive1 || recursive2)) {										// Neither of the two agruments is a recursion key.
+				fprintf(stderr, "Wrong agruments are entered or neither of the two agruments is -r.\n\n");
+				return 0;
 			}
 
-			if (strcmp(command, cmdExit) == 0)											// The first word must be tdir or exit. Check exit first.
-				exit(EXIT_SUCCESS);															// Exit.
-			else if (strcmp(command, cmdTdir) != 0) {									// Check a tdir command otherwise.
-				fprintf(stderr, "%s: command not found.\n\n", command);			// Command not found.
-				continue;
-			} else if (wordsRead > (int)wordCount::tdir_path_rkey) {				// Wrong agruments entered or redundant spaces in between..
-				fprintf(stderr, "Wrong agruments entered or redundant spaces in between.\n\n");
-				continue;
-			}
-
-			switch (wordsRead) {																// Parse the command line based on the number of words successfully read.
-			case (int)wordCount::tdir_exit :												// One word entered. That must be a tdir or exit command.
-				listRecursively(QDir::current(), maskAll, false);					// List without recursion.
-				break;
-
-			case (int)wordCount::tdir_path:												// Two words entered. The second word can be either a path or a recursion key.
-				if (strcmp(pathRKey1, recurKey) == 0)									// Check if the second word is a recursion key or not.
-					listRecursively(QDir::current(), maskAll, true);				// The second word is a recursion key. List recursively.
-				else {
-					path = QString(pathRKey1);												// The second word is a path.
-					distinguishPathMask(path, mask);										// If included, retrieve a mask from the end of the path.
-					checkPathAndList(path, mask, false);								// Check the path and list without recursion.
-				}
-				break;
-
-			case (int)wordCount::tdir_path_rkey: {										// Three words entered.
-				if (strcmp(pathRKey1, pathRKey2) == 0) {								// The second and the third words must not be the same.
-					fprintf(stderr, "Wrong agruments are entered or agruments 1 and 2 are the same.\n\n");
-					continue;
-				}
-
-				if (strcmp(pathRKey1, recurKey) == 0)									// Check if the second word is a recursion key or not.
-					recursive1 = true;														// The second word is a recursion key. List recursively.
-				else
-					path = QString(pathRKey1);												// The second word is a path.
-
-				if (strcmp(pathRKey2, recurKey) == 0)									// Check if the third word is a recursion key or not.
-					recursive2 = true;														// The third word a recursion key. List recursively.
-				else
-					path = QString(pathRKey2);												// The third word is a path.
-
-				if (!(recursive1 || recursive2)) {										// Neither of the two agruments is a recursion key.
-					fprintf(stderr, "Wrong agruments are entered or neither of the two agruments is -r.\n\n");
-					continue;
-				}
-
-				distinguishPathMask(path, mask);											// If included, retrieve a mask from the end of the path.
-				checkPathAndList(path, mask, true);										// Check the path and list recursively.
-				break;
-			}
-			}
+			distinguishPathMask(path, mask);											// If included, retrieve a mask from the end of the path.
+			checkPathAndList(path, mask, true);										// Check the path and list recursively.
+			break;
+		}
 		}
 	}
 	catch(const std::exception& exc) {													// Catch and dislplay an exception.
