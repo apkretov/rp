@@ -51,7 +51,7 @@ int main() {
 				exit(EXIT_SUCCESS);															// Exit on an error.
 			}
 
-			int wordsRead = sscanf(line, "%s %s %s %s", command, pathRKey1, pathRKey2, redundant);  // Get the number of successfully read words. //TO DO: Use sscan_s instead.
+			int wordsRead = sscanf(line, "%s %s %s %s", command, pathRKey1, pathRKey2, redundant);  // Get the number of successfully read words.
 			if (wordsRead == EOF || wordsRead == 0) {									// An input failure.
 				fprintf(stderr, "No valid input!\n\n");
 				continue;
@@ -120,7 +120,6 @@ int main() {
 // Distinguish path and mask. Unless the path argument is completely a file mask, retrieve it from the end of the path. A mask can be appended at the end
 // of a path after the last right/left slash (Linux: /, Windows: \). A mask must contain wildcards ('*', '?', [, ]). If there is any one of them that is a
 // file mask.
-// TO DO: More comments on the function agruments and return values.
 //*********************************************************************************************************************************************************
 void distinguishPathMask(QString& path, QString& mask) {
 	const char wildcards[] = {'*', '?', '['};	// The wildcards to detect a file mask.
@@ -148,7 +147,6 @@ void distinguishPathMask(QString& path, QString& mask) {
 
 //*********************************************************************************************************************************************************
 // Check a path and list files and directories, if a path exists.
-// TO DO: More comments on the function agruments.
 //*********************************************************************************************************************************************************
 void checkPathAndList(const QString& path, const QString& mask, const bool recursive) {
 	QDir dir(path);
@@ -160,9 +158,8 @@ void checkPathAndList(const QString& path, const QString& mask, const bool recur
 
 //*********************************************************************************************************************************************************
 // List files recursively in the selected directory and all its subdirectories, if necessary.
-// TO DO: More comments on the function agruments.
 //*********************************************************************************************************************************************************
-void listRecursively(QDir dir, const QString& mask, const bool recursive) { //TO DO: Arrange a break-out with a thread.
+void listRecursively(QDir dir, const QString& mask, const bool recursive) {
 	enum struct fieldWidth : int {size = 15, modificationDate = 20};	// Field widths for printing.
 	const QString dirMark{"<DIR>"};											// A directory mark.
 
