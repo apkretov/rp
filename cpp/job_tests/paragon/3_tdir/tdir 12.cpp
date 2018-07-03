@@ -7,9 +7,9 @@
 //void listRecursively(QDir, const QString&, const bool);
 void listRecursively(QDir, const QStringList&, const bool);
 
-//const char* const cmdTdir{"tdir"}; // The tdir command.
+const char* const cmdTdir{"tdir"}; // The tdir command.
 //const QString maskAll("*"); // All directories/files mask ('*' wildcard).
-//const QStringList maskAll("*"); // All directories/files mask ('*' wildcard).
+const QStringList maskAll("*"); // All directories/files mask ('*' wildcard).
 
 QTextStream out(stdout); // Interface for writing QString text.
 
@@ -23,7 +23,6 @@ int main(int argc, char** argv) {
 	try {
 		constexpr unsigned tdirOnly{1}; // The count of agruments when only the tdir command entered w/o path/mask or -r.
 		const char* const recurKey{"-r"}; // The recursion key.
-		const QStringList maskAll("*"); // All directories/files mask ('*' wildcard).
 		const QString prompt = QDir::toNativeSeparators(QDir::currentPath()) + " >> "; // A prompt with the current directory.
 		bool recursive{}; // The -r flag.
 

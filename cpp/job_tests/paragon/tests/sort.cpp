@@ -1,3 +1,4 @@
+/*
 // sort algorithm example @ http://www.cplusplus.com/reference/algorithm/sort/
 #include <iostream>     // std::cout
 #include <algorithm>    // std::sort
@@ -30,3 +31,4 @@ int main () {
 
   return 0;
 }
+*/

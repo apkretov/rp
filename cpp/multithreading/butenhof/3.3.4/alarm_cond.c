@@ -25,19 +25,19 @@ void printTimespec(void) { //timespec_get @ http://en.cppreference.com/w/c/chron
 void alarm_insert(alarm_t* sttAlarm) { // Insert alarm entry on list, in order. //Part 2 shows the new function alarm_insert. This function is nearly the same as the list insertion code from alarm_mutex.c, except that it signals the condition variable alarm_cond when necessary. I made alarm_insert a separate function because now it needs to be called from two places — once by main to insert a new alarm, and now also by alarm_thread to reinsert an alarm that has been "preempted" by a new earlier alarm.
 	int intStatus;
 	alarm_t **sttLast, *sttNext;
-	sttLast = &msttAlarmList;/**/ //LOCKING PROTOCOL: This routine requires that the caller have locked the alarm_mutex! //9-14 I have recommended that mutex locking protocols be documented, and here is an example: The alarm_insert function points out explicitly that it must be called with the alarm_mutex locked.
+	sttLast = &msttAlarmList; //LOCKING PROTOCOL: This routine requires that the caller have locked the alarm_mutex! //9-14 I have recommended that mutex locking protocols be documented, and here is an example: The alarm_insert function points out explicitly that it must be called with the alarm_mutex locked.
 	sttNext = *sttLast;
 	while (sttNext != NULL) {
 		if (sttNext->time >= sttAlarm->time) {
 			sttAlarm->link = sttNext;
-			*sttLast = sttAlarm;/*2*//*3sec->link = 5sec*/
+			*sttLast = sttAlarm;
 			break;
 		}
-		sttLast = &sttNext->link;/*1*//*3sec->link*/
+		sttLast = &sttNext->link;
 		sttNext = sttNext->link;
 	}
 	if (sttNext == NULL) { //If we reached the end of the list, insert the new alarm there.("next" is NULL, and "last" points to the link field of the last item, or to the list header.)
-		*sttLast = sttAlarm;/**//*5sec->link = 10sec*/
+		*sttLast = sttAlarm;
 		sttAlarm->link = NULL;
 	}
 	if (mdtmCurrentAlarm == 0 || sttAlarm->time < mdtmCurrentAlarm) { //48-53: If current_alarm(the time of the next alarm expiration) is 0. then the alarm_thread is not aware of any outstanding alarm requests, and is waiting for new work. If current_alarm has a time greater than the expiration time of the new alarm, then alarm_thread is not planning to look for new work soon enough to handle the new alarm. In either case, signal the alarm_cond condition variable so that alarm_thread will wake up and process the new alarm. //Wake the alarm thread if it is not busy(that is, if current_alarm is 0, signifying that it's waiting for work), or if the new alarm comes before the one on which the alarm thread is waiting.
@@ -55,7 +55,7 @@ void* alarm_thread(void* arg) { // The alarm thread's start routine. //Part 3 sh
 	while (1) {
 		mdtmCurrentAlarm = 0; //26 //26-31 If the alarm_list is empty, alarm_mutex.c could do nothing but sleep anyway, so that main would be able to process a new command. The result was that it could not see a new alarm request for at least a full second. Now, alarm_thread instead waits on the alarm_cond condition variable, with no timeout. It will "sleep" until you enter a new alarm command, and then main will be able to awaken it immediately. Setting current_alarm to 0 tells main that alarm_thread is idle. Remember that pthread_cond_wait unlocks the mutex before waiting, and relocks the mutex before returning to the caller. //If the alarm list is empty, wait until an alarm is added. Setting current_alarm to 0 informs the insert routine that the thread is not busy.
 		while (msttAlarmList == NULL) { //The predicate loop. It is important that you test the predicate after locking the appropriate mutex and before waiting on the condition variable. It is equally important that you test the predicate again when the thread wakes up. You should always wait for a condition variable in a loop, to protect against program errors, multiprocessor races, and spurious wakeups.
-			intStatus = pthread_cond_wait(&msttAlarmCond, &msttAlarmMutex); if (intStatus != 0) err_abort(intStatus, "Wait on cond"); //printTimespec(); printf( "alarm_thread 222: (msttAlarmList == NULL) = %s\n", ((msttAlarmList == NULL) ? "true" : "false") );
+			intStatus = pthread_cond_wait(&msttAlarmCond, &msttAlarmMutex); if (intStatus != 0) err_abort(intStatus, "Wait on cond");
 		} //31
 		sttAlarm = msttAlarmList;
 		msttAlarmList = sttAlarm->link;
@@ -89,7 +89,6 @@ int main(int argc, char* argv[]) { //Part 4 shows the final section of alarm_con
 	char line[128];
 	alarm_t* sttAlarm;
 	pthread_t lngThread;
-
 	intStatus = pthread_create(&lngThread, NULL, alarm_thread, NULL); if (intStatus != 0) err_abort(intStatus, "Create alarm thread");
 	while (1) {
 		printf("Alarm> ");
@@ -103,5 +102,5 @@ int main(int argc, char* argv[]) { //Part 4 shows the final section of alarm_con
 			alarm_insert(sttAlarm); //38 Because the condition variable signal operation is built into the new alarm_insert function, we call alarm_insert rather than inserting a new alarm directly. //Insert the new alarm into the list of alarms, sorted by expiration time.
 			intStatus = pthread_mutex_unlock(&msttAlarmMutex); if (intStatus != 0) err_abort(intStatus, "Unlock mutex");
 		}
-	} //printf( "alarm_insert 222: (msttAlarmList == NULL) = %s\n", ((msttAlarmList == NULL) ? "true" : "false") );
+	}
 }

@@ -5,8 +5,6 @@
 
 void listRecursively(QDir, const QString&, const bool);
 
-QTextStream out(stdout); // Interface for writing QString text.
-
 //*********************************************************************************************************************************************************
 // The main function.
 // In the command line, enter 'tdir [path/mask] [-r]' or 'tdir [-r] [path/mask]' to list files.
@@ -49,6 +47,7 @@ int main(int argc, char** argv) {
 void listRecursively(QDir dir, const QString& mask, const bool recursive) {
 	enum struct fieldWidth : int {size = 15, modificationDate = 20}; // Field widths for printing.
 	const QString dirMark{"<DIR>"}; // A directory mark.
+	QTextStream out(stdout); // Interface for writing QString text.
 
 	dir.setSorting(QDir::Name // Sort by name.
 						| QDir::DirsFirst // Put the directories first, then the files.
