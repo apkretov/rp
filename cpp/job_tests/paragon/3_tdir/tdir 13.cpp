@@ -4,7 +4,12 @@
 #include <QDateTime> // Date and time functions.
 #include <exception>
 
+//void listRecursively(QDir, const QString&, const bool);
 void listRecursively(QDir, const QStringList&, const bool);
+
+//const char* const cmdTdir{"tdir"}; // The tdir command.
+//const QString maskAll("*"); // All directories/files mask ('*' wildcard).
+//const QStringList maskAll("*"); // All directories/files mask ('*' wildcard).
 
 QTextStream out(stdout); // Interface for writing QString text.
 
@@ -55,6 +60,7 @@ int main(int argc, char** argv) {
 // List files recursively in the selected directory and all its subdirectories, if necessary.
 // TO DO: More comments on the function agruments.
 //*********************************************************************************************************************************************************
+//void listRecursively(QDir dir, const QString& mask, const bool recursive) { //TO DO: Arrange a break-out with a thread.
 void listRecursively(QDir dir, const QStringList& mask, const bool recursive) { //TO DO: Arrange a break-out with a thread.
 	enum struct fieldWidth : int {size = 15, modificationDate = 20}; // Field widths for printing.
 	const QString dirMark{"<DIR>"}; // A directory mark.
@@ -70,6 +76,8 @@ void listRecursively(QDir dir, const QStringList& mask, const bool recursive) { 
 					  | QDir::NoDotAndDotDot // Do not list the special entries "." and "..".
 					  | QDir::System); // List system files (on Unix, FIFOs, sockets and device files are included; on Windows, .lnk files are included).
 
+	//QStringList filters(mask); //Set the name filters. Each name filter is a wildcard filter that understands wildcards.
+	//dir.setNameFilters(filters);
 	dir.setNameFilters(mask); //Set the name filters. Each name filter is a wildcard filter that understands wildcards.
 
 	out << QDir::toNativeSeparators(dir.absolutePath()) << ":" << endl; // Print the directory path atop the files contained.
