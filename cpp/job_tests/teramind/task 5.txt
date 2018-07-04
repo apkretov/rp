@@ -1,0 +1,15 @@
+Options That Control Optimization
+
+   -O0 Reduce compilation time and make debugging produce the expected results.  This is the default.  
+
+   Most optimizations are only enabled if an -O level is set on the command line.  Otherwise they are disabled, even if individual optimization flags are
+   specified.
+
+Options for Debugging Your Program or GCC
+
+   -g  Produce debugging information in the operating system's native format.  GDB can work with this debugging information.
+
+       GCC allows you to use -g with -O.  The shortcuts taken by optimized code may occasionally produce surprising results: some variables you declared may
+       not exist at all; flow of control may briefly move where you did not expect it; some statements may not be executed because they compute constant
+       results or their values are already at hand; some statements may execute in different places because they have been moved out of loops.
+
