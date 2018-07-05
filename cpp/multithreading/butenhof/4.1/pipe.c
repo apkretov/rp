@@ -99,7 +99,6 @@ int pipe_result(pipe_t* sttPipe, long *lngResult) { //23-47 The pipe_result func
 	tail->dataReady = 0;
 	pthread_cond_signal(&tail->condReady);
 	pthread_mutex_unlock(&tail->mutex); //55
-
 	return 1;
 }
 
