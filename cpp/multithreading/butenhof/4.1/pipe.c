@@ -32,8 +32,8 @@ int pipe_send(stage_t* sttStage, long lngData) { // Part 2 shows pipe_send, a ut
 	return intStatus;
 }
 
-void* pipe_stage(void* vrbArg) { // Part 3 shows pipe_stage, the start function for each thread in the pipeline. The thread's argument is a pointer to its stage_t structure.		// The thread start routine for pipe stage threads. Each will wait for a data item passed from the caller or the previous stage, modify the data and pass it along to the next (or final) stage.
-	stage_t* sttStage = (stage_t*)vrbArg;
+void* pipe_stage(void* varArg) { // Part 3 shows pipe_stage, the start function for each thread in the pipeline. The thread's argument is a pointer to its stage_t structure.		// The thread start routine for pipe stage threads. Each will wait for a data item passed from the caller or the previous stage, modify the data and pass it along to the next (or final) stage.
+	stage_t* sttStage = (stage_t*)varArg;
 	stage_t* sttNextStage = sttStage->next;
 	int intStatus;
 	intStatus = pthread_mutex_lock(&sttStage->mutex); if (intStatus != 0) err_abort(intStatus, "Lock pipe stage");
