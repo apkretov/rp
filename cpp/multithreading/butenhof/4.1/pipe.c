@@ -41,9 +41,9 @@ void* pipe_stage(void* varArg) { // Part 3 shows pipe_stage, the start function 
 		while (sttStage->dataReady != 1) {
 			intStatus = pthread_cond_wait(&sttStage->condAvail, &sttStage->mutex); if (intStatus != 0) err_abort(intStatus, "Wait for previous stage"); // A condition variable wait always returns with the mutex locked. @ 1. 3.3 Condition variables.
 		}
-		pipe_send(sttNextStage, sttStage->data + 1); // 22-26 When given data, the thread increases its own data value by one, and passes the result to the next stage. The thread then records that the stage no longer has data by clearing the dataReady flag, and signals the ready condition variable to wake any thread that might be waiting for this pipeline stage.
+		pipe_send(sttNextStage/*BECAUSE THE LAST STAGE'S NEXT STAGE IS NULL WHY DOES NOT pipe_sent THROW AN EXCEPTION?*/, sttStage->data + 1); // 22-26 When given data, the thread increases its own data value by one, and passes the result to the next stage. The thread then records that the stage no longer has data by clearing the dataReady flag, and signals the ready condition variable to wake any thread that might be waiting for this pipeline stage.
 		sttStage->dataReady = 0;
-		intStatus = pthread_cond_signal(&sttStage->condReady/*SUSPENDED: Thread 1 has signaled condReady.*/); if (intStatus != 0) err_abort(intStatus, "Wake next stage"); // 26
+		intStatus = pthread_cond_signal(&sttStage->condReady/*WHOM IS THIS SIGNAL FOR?*/); if (intStatus != 0) err_abort(intStatus, "Wake next stage"); // 26
 	} // 27 // Notice that the routine never unlocks the stage->mutex. The call to pthread_cond_wait implicitly unlocks the mutex while the thread is waiting, allowing other threads to make progress. Because the loop never terminates, this function has no need to unlock the mutex explicitly.			// Waiting on a condition variable atomically releases the associated mutex and waits until another thread signals the condition variable. The mutex must always be locked when you wait on a condition variable and, when a thread wakes up from a condition variable wait, it always resumes with the mutex locked. @ 3.3 Condition variables
 }
 
