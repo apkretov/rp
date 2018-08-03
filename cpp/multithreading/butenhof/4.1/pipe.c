@@ -1,3 +1,4 @@
+
 #include <pthread.h>	// The program shows the pieces of a simple pipeline program. Each thread in the pipeline increments its input value by 1 and passes it to the next thread. The main program reads a series of "command lines" from stdin. A command line is either a number, which is fed into the beginning of the pipeline, or the character "=," which causes the program to read the next result from the end of the pipeline and print it to stdout.
 #include "errors.h"
 
@@ -40,7 +41,12 @@ void* pipe_stage(void* varArg) { // Part 3 shows pipe_stage, the start function 
 	while (1) { // 16-27 The thread loops forever, processing data. Because the mutex is locked outside the loop, the thread appears to have the pipeline stage's mutex locked all the time. However, it spends most of its time waiting for new data, on the avail condition variable. Remember that a thread automatically unlocks the mutex associated with a condition variable, while waiting on that condition variable. In reality, therefore, the thread spends most of its time with mutex unlocked.
 		while (sttStage->dataReady != 1) {
 			intStatus = pthread_cond_wait(&sttStage->condAvail, &sttStage->mutex); if (intStatus != 0) err_abort(intStatus, "Wait for previous stage"); // A condition variable wait always returns with the mutex locked. @ 1. 3.3 Condition variables.
-		}
+		} //printf("\nsttStage: %p, data: %ld, sttNextStage: %p\n", sttStage, sttStage->data, sttNextStage);
+//		printf("data: %ld ", sttStage->data);
+//		if (*sttNextStage != (stage_t)NULL)
+//			printf("sttNextStage is not NULL\n");
+//		else
+//			printf("sttNextStage is NULL\n");
 		pipe_send(sttNextStage/*BECAUSE THE LAST STAGE'S NEXT STAGE IS NULL WHY DOES NOT pipe_sent THROW AN EXCEPTION?*/, sttStage->data + 1); // 22-26 When given data, the thread increases its own data value by one, and passes the result to the next stage. The thread then records that the stage no longer has data by clearing the dataReady flag, and signals the ready condition variable to wake any thread that might be waiting for this pipeline stage.
 		sttStage->dataReady = 0;
 		intStatus = pthread_cond_signal(&sttStage->condReady/*WHOM IS THIS SIGNAL FOR?*/); if (intStatus != 0) err_abort(intStatus, "Wake next stage"); // 26
@@ -100,10 +106,6 @@ int pipe_result(pipe_t* sttPipe, long *lngResult) { // 23-47 The pipe_result fun
 	pthread_cond_signal(&tail->condReady);
 	pthread_mutex_unlock(&tail->mutex); // 55
 	return 1;
-}
-
-void displayStages() {
-	SUSPENDED for ()
 }
 
 int main() { // Part 6 shows the main program that drives the pipeline. It creates a pipeline, and then loops reading lines from stdin. If the line is a single "=" character, it pulls a result from the pipeline and prints it. Otherwise, it converts the line to an integer value, which it feeds into the pipeline.			// The main program to "drive" the pipeline...
