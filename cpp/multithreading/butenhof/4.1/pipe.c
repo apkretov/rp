@@ -10,7 +10,7 @@ typedef struct stage_tag {		// 9						// 9-17 Each stage of a pipeline is repres
 	long data;						// Data to process	// 9-17 The data member is the data passed from the previous stage,
 	pthread_t thread;				// Thread for stage	// 9-17 thread is the thread operating this stage,
 	struct stage_tag* next;		// Next stage			// 9-17 and next is a pointer to the following stage.
-}stage_t;						// 17
+} stage_t;							// 17
 
 typedef struct pipe_tag {	// 23							// 23-29 The pipe_t structure describes a pipeline. It provides pointers to the first and last stage of a pipeline.		// External structure representing the entire pipeline.
 	pthread_mutex_t mutex;	// Mutex to protect pipe
