@@ -1,0 +1,3 @@
+Postgresql users
+Deafault: postgres 110502
+Mine: alex 110502
