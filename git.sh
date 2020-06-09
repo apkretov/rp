@@ -6,13 +6,16 @@ echo "git status"
 git status
 
 echo
+echo "git checkout master"
+git checkout master
+
+echo
 echo "git add ."
 git add .
 
 echo
 echo "git status"
 git status
-
 
 echo
 echo "git commit -m 'Auto synchronization by bash sync.sh'"
