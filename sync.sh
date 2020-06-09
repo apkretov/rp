@@ -1,5 +1,7 @@
 git status
 git add .
-git commit
+git status
+git commit -m 'Auto synchronization by bash sync.sh'
+git status
 git push
 git status
