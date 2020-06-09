@@ -1,4 +1,4 @@
-#! Auto synchronization
+#!
 echo "Auto synchronization by bash sync.sh started..."
 
 echo
