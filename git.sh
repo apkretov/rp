@@ -10,6 +10,10 @@ echo "git checkout master"
 git checkout master
 
 echo
+echo "git status"
+git status
+
+echo
 echo "git add ."
 git add .
 
