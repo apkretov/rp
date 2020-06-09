@@ -28,4 +28,11 @@ git push
 
 echo
 echo "git status"
+
+echo
+echo "git pull"
+git pull
+
+echo
+echo "git status"
 git status
