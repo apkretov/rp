@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHML 1.0 Strict//EN"
+	"http://www.we.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns = "http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Program that Simulates the Game of Craps</title>
+		<style type="text/css">
+			table {text-align: right;}
+			body {font-family: Arial, sans-serif;}
+			div.red {color: red;}
+		</style>
+		<script type="text/javascript">
+			<!--  
+				var WON = 0;
+				var LOST = 1;
+				var CONTINUE_ROLLING = 2;
+
+				var firstRoll = true;
+				var sumOfDice = 0;
+				var myPoint = 0;
+				var gameStatus = CONTINUE_ROLLING;
+
+				function play() {
+					var point = document.getElementById("pointfield"); // Get the point feild on the page.
+					var statusDiv = document.getElementById("status"); // Get the staus div on the page.
+
+					if (firstRoll) {
+						sumOfDice = rollOfDice();
+						
+						switch (sumOfDice) {
+							case 7:
+							case 11:
+								gameStatus = WON;
+								point.value = "";
+								break;
+							case 2:
+							case 3:
+							case 12:
+								gameStatus = LOST;
+								point.value = "";
+								break;
+							default:
+								gameStatus = CONTINUE_ROLLING;
+								myPoint = sumOfDice;
+								point.value = myPoint;
+								firstRoll = false;
+								break;
+						}
+					}
+					statusDiv.innerHTML = "MINE"; //MINE
+				}
+
+				function rollOfDice() {
+					return 0; //MINE
+				}
+			// -->
+		</script>
+	</head>
+	
+	<body>
+		<form action="">
+			<table>
+				<caption>Craps</caption>
+				<tr>
+					<td>Die 1</td>
+					<td><input id="die1field" type="text"></td>
+				</tr>
+				<tr>
+					<td>Die 2</td>
+					<td><input id="die2field" type="text"></td>
+				</tr>
+				<tr>
+					<td>Sum</td>
+					<td><input id="sumfield" type="text"></td>
+				</tr>
+				<tr>
+					<td>Point</td>
+					<td><input id="pointfield" type="text"></td>
+				</tr>
+				<tr>
+					<td/>
+					<td><input type="button" value="Roll Dice" onclick="play()"></td>
+				</tr>
+			</table>
+			<div id="status" class="red">Click the Roll Dice button to play</div>
+		</form>
+	</body>
+</html>
