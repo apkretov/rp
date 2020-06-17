@@ -1,0 +1,34 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHML 1.0 Strict//EN"
+	"http://www.we.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns = "http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Initializing Multidimensional Arrays</title>
+		<script type="text/javascript">
+			<!--  
+				var array1 = [
+					[1, 2, 3],
+					[4, 5, 6]
+				];
+				var array2 = [
+					[1, 2],
+					[3],
+					[4, 5, 6]
+				];
+				outputArray("Values in array1 by row", array1);
+				outputArray("Values in array2 by row", array2);
+
+				function outputArray(heading, theArray) {
+					document.writeln("<h2>" + heading + "</h2><pre>");
+					for (var i in theArray) {
+						for (const j in theArray[i])
+							document.write(theArray[i][j] + " ");
+						document.writeln("<br/>");
+					}
+					document.writeln("</pre>");
+				}
+			//-->
+		</script>
+	</head>
+</html>

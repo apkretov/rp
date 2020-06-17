@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHML 1.0 Strict//EN"
+	"http://www.we.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns = "http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Online Quiz</title>
+		<script type="text/javascript">
+			<!--
+				//MINE alert("111");
+				function checkAnswers() {
+					alert("222"); //MINE 
+					var myQuiz = document.getElementById("myQuiz");
+					if (myQuiz.elemets[1].checked)
+						alert("Congratualations, your answer is correct!");
+					else
+						alert("Your answer is incorrect. Please try again.");
+				}
+				//MINE alert("333");
+			//-->
+		</script>
+	</head>
+
+	<body>
+		<form id="myQuiz" onsubmit="checkAnswers" action="">
+			<p>
+				Select the name of the tip that goes with the image shown:<br/>
+				<img src="Clear sky.jpg" alt="mystery tip"/><br/>
+
+				<input type="radio" name="radiobutton" value="CPE"/>
+				<label>Common Programming Error</label>
+
+				<input type="radio" name="radiobutton" value="EPT"/>
+				<label>Error-Prevention Tip</label>
+
+				<input type="radio" name="radiobutton" value="PERF"/>
+				<label>Performance Tip</label>
+
+				<input type="radio" name="radiobutton" value="PORT"/>
+				<label>Portability Tip</label><br/>
+
+				<input type="submit" name="submit" value="Submit"/>
+				<input type="reset" name="reset" value="Reset"/>
+				
+				<input type="button" value="Check answers" onclick="checkAnswers"/> <!-- MINE -->
+			</p>
+		</form>
+	</body>
+</html>
