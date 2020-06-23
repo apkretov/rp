@@ -1,0 +1,90 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHML 1.0 Strict//EN"	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns = "http://www.w3.org/1999/xhtml">
+	<head>
+		<title>Using the Window Objects</title>
+		<script type="text/javascript">
+			<!--  
+				var childWindow;
+				
+				function createChildWindow() {
+					var toolBar;
+					var menuBar;
+					var scrollBars;
+
+					if (document.getElementById("toolBarCheckBox").checked) 
+						toolBar = "yes";
+					else
+						toolBar = "no";
+
+					if (document.getElementById("menuBarCheckBox").checked) 
+						menuBar = "yes";
+					else
+						menuBar = "no";
+					if (document.getElementById("scrollBarsCheckBox").checked) 
+						scrollBars = "yes";
+					else
+						scrollBars = "no";
+
+					childWindow = window.open("", "", ",toolbar = " + toolBar + ",menubar = " + menuBar + ",scrollbars = " + scrollBars);
+					document.getElementById("closeButton").disabled = false;
+					document.getElementById("modifyButton").disabled = false;
+					document.getElementById("setURLButton").disabled = false;
+				}
+
+				function modifyChildWindow() {
+					if (childWindow.closed)
+						alert("You attempted to ineract with a closed window");
+					else
+						childWindow.document.write(document.getElementById("textForChild").value)
+				}
+
+				function closeChildWindow() {
+					if (childWindow.closed)
+						alert("You attempted to ineract with a closed window");
+					else
+						childWindow.close();
+
+					document.getElementById("closeButton").disabled = true;
+					document.getElementById("modifyButton").disabled = true;
+					document.getElementById("setURLButton").disabled = true;
+				}
+
+				function setChildWindowURL() {
+					if (childWindow.closed)
+						alert("You attempted to ineract with a closed window");
+					else
+						childWindow.location = document.getElementById("myChildURL").value;
+				}
+			//-->
+		</script>
+	</head>
+	
+	<body>
+		<h1>Hello, this is the main window</h1>
+		<p>Please check the feature to enable for the child window<br>
+			
+			<input id="toolBarCheckBox" type="checkbox" value="" checked = "checked">
+			<label>Tool Bar</label>
+			
+			<input id="menuBarCheckBox" type="checkbox" value="" checked = "checked">
+			<label>Menu Bar</label>
+
+			<input id="scrollBarsCheckBox" type="checkbox" value="" checked = "checked">
+			<label>Scroll Bars</label>
+		</p>
+		<p>
+			Please enter the text that you would like to display in the child window<br>
+			<input id="textForChild" type="text" value="<h1>Hello, I am a child window.</h1>">
+			<input id="createButton" type="button" value="Create Child Window" onclick="createChildWindow()">
+			<input id="modifyButton" type="button" value="Modify Child Window" onclick="modifyChildWindow()" disabled="disabled">
+			<input id="closeButton" type="button" value="Close Child Window" onclick="closeChildWindow()" disabled="disabled">
+		</p>
+		<p>
+			The other window's URL is: <br>
+			<input id="myChildURL" type="text" value="./">
+			<input id="setURLButton" type="button" value="Set Child URL" onclick="setChildWindowURL()" disabled="disabled">
+		</p>
+	</body>
+</html>

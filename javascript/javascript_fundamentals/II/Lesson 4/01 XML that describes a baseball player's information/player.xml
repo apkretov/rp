@@ -1,0 +1,6 @@
+<?xml version="1.0"?>
+<player>
+    <firstName>John</firstName>
+    <lastName>Doe</lastName>
+    <battingAverage>0.375</battingAverage>
+</player>
