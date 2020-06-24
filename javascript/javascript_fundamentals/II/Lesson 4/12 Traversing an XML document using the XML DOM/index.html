@@ -1,2 +1,120 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHML 1.0 Strict//EN"	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns = "http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Traversing an XML document using the XML DOM</title>
+        <style type="txt/css">
+            .highlighted {background-color: yellow;}
+            #outputDiv {font: 10pt "Lucida Console", monospace;}
+        </style>
+        
+        <script type="text/javascript">
+            <!--
+                var doc;
+                var outputHTML = "";
+                var idCounter = 1;
+                var depth = -1;
+                var current = null;
+                var previous = null;
+
+                function loadXMLDocument(ulr) {
+                    if (window.ActiveXObject) { // IE7
+                        doc = new ActiveXObject("Msxml2.DOMDocument.6.0");
+                        doc.async = false;
+                        doc.load(url);
+                        buildHTML(doc.childNodes);
+                        displayDoc();
+                    } else if (document.implementation && document.implementation.createDocument) { // Other browsers.
+                        doc = document.implementation.createDocument("", "", null);
+                        doc.load(url);
+                        doc.onload = function() {
+                            buildHTML(doc.childNodes);
+                            displayDoc();                            
+                        }
+                    } else
+                        alert('This script is not suported by your browser');
+                }
+
+                function buildHTML(childList) {
+                    ++depth;
+                    for (var i = 0; i < childList.length; i++) {
+                        switch (childList[i].nodeType) {
+                            case 1: // Node.ELEMENT_NODE
+                                outputHTML += '<div id = "id" + idCounter>';
+                                spaceOutput(depth);
+                                outputHTML += childList[i].nodeName;
+                                ++idCounter;
+                                if (childList[i].childNodes.length != 0)
+                                    buildHTML(childList[i].childNodes);
+                                outputHTML += '</div>';
+                                break;
+                            case 3: // Node.TEXT_NODE
+                            case 8: // Node.COMMENT_NODE
+                                if (childList[i].nodeValue.indexOf("   ") == -1 && childList[i].nodeValue.indexOf("      ") == -1) {
+                                    outputHTML += '<div id = "id" + idCounter>';
+                                    spaceOutput(depth);
+                                    outputHTML += childList[i].nodeValue + '</div>';
+                                    ++idCounter;
+                                }
+                        }
+                        --depth;
+                    }
+                }
+
+                function displayDoc() {
+                    document.getElementById("outputDiv").innerHTML = outputHTML;
+                    current = document.getElementById('id1');
+                    setCurrentNodeStyle(current.id, true);
+                }
+
+                function processFirstChild() {
+                    if (current.childNodes.length == 1 && current.firstChild.nodeType == 3)
+                        alert('There is no child node');
+                    else if (current.childNodes.length > 1) {
+                        previous = current;
+                        if (current.firstChild.nodeType != 3)
+                            current = current.firstChild;
+                        else
+                            current = current.firstChild.nextSubling;
+                        setCurrentNodeStyle(previous.id, false);
+                        setCurrentNodeStyle(current.id, true);
+                    } else
+                        alert('There is no child node');
+                }
+
+                function setCurrentNodeStyle(id, highlight) {
+                    document.getElementById(id).className = (highlight ? 'highlighted' : '');
+                }
+
+                function processNextSubling() {
+                    alert('Enter your code for processNextSubling!');
+                }
+
+                function processPrviouseSubling() {
+                    alert('Enter your code for processPrviouseSubling!');
+                }
+
+                function processLastChild() {
+                    alert('Enter your code for processLastChild!');
+                }
+
+                function processParentNode() {
+                    alert('Enter your code for processParentNode!');
+                }
+                                
+            //-->
+        </script>
+    </head>
+
+    <body id="body" onload="loadXMLDocument('article.xml');">
+        <form action="" onsubmit="return false;">
+            <input type="submit" value="firstChild" ondblclick="processFirstChild()">
+            <input type="submit" value="nextSubling" ondblclick="processNextSubling()">
+            <input type="submit" value="previousSubling" ondblclick="processPreviousSubling()">
+            <input type="submit" value="lastChild" ondblclick="processLastChild()">
+            <input type="submit" value="parentNode" ondblclick="processParentNode()">
+        </form><br>
+        <div id="outputDiv"/>
+    </body>
+</html>

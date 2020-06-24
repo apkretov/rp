@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <title>Pulling Imanges onto the Page</title>
+        <style type="text/css">
+            td {padding: 4px;}
+            img {border: 1px solid black;}
+        </style>
+            <script>
+            <!--  
+            function getImages(url) {
+                try {
+                    asyncRequest = new XMLHttpRequest();
+                    asyncRequest.onreadystatechange = processResponse;
+                    asyncRequest.open('GET', url, true);
+                    asyncRequest.send(null);
+                } catch (exception) {
+                    alert('Request failed.')
+                }
+            }
+            
+            function processResponse() {
+                if (asyncRequest.readyStat == 4 && asyncRequest.status == 200 && asyncRequest.responseXML) {
+                    clearTable();
+                    var covers = asyncRequest.responseXML.getElementByTagName('cover');
+                    var baseUrl = asyncRequest.responseXML.getElementByTagName('baseurl').item(0).firstChild.nodeValue;
+                    var output = document.getElementById('covers');
+                    var imageTable = document.createElement('table');
+                    var tableBody = document.createElement('tbody');
+                    var rowCount = 0;
+                    var imageRow = document.createElement('tr');
+                    // ...
+                }
+            }
+
+            function clearTable() {
+                document.getElementById('covers').innerHTML = '';
+            }
+            //-->
+        </script>
+    </head>
+
+    <body>
+        <input type="radio" checked="unchecked" name="Books" value="all" onclick='getImage("all.xml")'/> All Books
+        <input type="radio" checked="checked" name="Books" value="none" onclick='clearTable()'/> None
+        <br>
+        <div id="covers"></div>
+    </body>
+</html>
