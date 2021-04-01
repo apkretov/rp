@@ -1,16 +1,16 @@
 section .data
-	chrDigit db 0,10
+	digit db 0, 10
 
 section .text
 	global _start
 
 _printRAXDigit:
 	add rax, 48 			;Add zero to rax. ASCII 48 is zero.
-	mov [chrDigit], al 		;Move the lowes 8 bits of rax (i.e. 1 byte or a char) to the chrDigit adress.
+	mov [digit], al 		;Move the lowes 8 bits of rax (i.e. 1 byte or a char) to the digit adress.
 
 	mov rax, 1
 	mov rdi, 1
-	mov rsi, chrDigit
+	mov rsi, digit
 	mov rdx, 2
 	syscall
 
@@ -56,9 +56,9 @@ _testStack:
 
 
 _start:
-	;call _testPrintDigit ;Call either _testPrintDigit or _testMath. _testMath raises an error, if is executed together with _testPrintDigit.
+	call _testPrintDigit ;Call either _testPrintDigit or _testMath. _testMath raises an error, if it is executed together with _testPrintDigit.
 	;call _testMath
-	call _testStack
+	;call _testStack
 
 	mov rax, 60 			;Exit.
 	mov rdi, 0
