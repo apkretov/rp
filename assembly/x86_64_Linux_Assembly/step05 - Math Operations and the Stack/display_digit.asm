@@ -1,5 +1,6 @@
 section .data
 	digit db 0, 10
+	len	equ $-digit			;MINE: Smallest x86 ELF Hello World @ http://timelessname.com/elfbin/
 
 section .text
 	global _start
@@ -11,13 +12,15 @@ _printRAXDigit:
 	mov rax, 1
 	mov rdi, 1
 	mov rsi, digit
-	mov rdx, 2
+	;ORIG mov rdx, 2
+	mov rdx, len			;MINE: Smallest x86 ELF Hello World @ http://timelessname.com/elfbin/
 	syscall
 
 	ret
 
 
 _testPrintDigit:
+	mov rax, 0 ;MINE
 	call _printRAXDigit 	;Print 0.
 
 	mov rax, 7 				;Print 7.
