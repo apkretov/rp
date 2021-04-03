@@ -2,7 +2,8 @@ section .bss
     digitSpace resb 100             ;Reserve a space for the digits of a number printed out .
     digitSpacePos resb 8            ;It keeps track how far in digitSpace we are. 8 bytes are enough for a 64 bit-number.
 
-section .data
+; ORIG section .data
+section .rodata ;MINE
     text db "Hello, World!",10,0
 
 section .text
