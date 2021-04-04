@@ -60,8 +60,8 @@ _testStack:
 
 _start:
 	;call _testPrintDigit ;Call either _testPrintDigit or _testMath. _testMath raises an error, if it is executed together with _testPrintDigit.
-	;call _testMath
-	call _testStack
+	call _testMath
+	;call _testStack
 
 	mov rax, 60 			;Exit.
 	mov rdi, 0
