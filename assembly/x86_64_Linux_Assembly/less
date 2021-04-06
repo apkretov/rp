@@ -1,0 +1,192 @@
+Binary file ./step13 - Pausing With Nanosleep/Screenshot 04.png matches
+Binary file ./step13 - Pausing With Nanosleep/Screenshot 09.png matches
+Binary file ./step13 - Pausing With Nanosleep/Screenshot 03.png matches
+Binary file ./step13 - Pausing With Nanosleep/Screenshot 06.png matches
+Binary file ./step13 - Pausing With Nanosleep/Screenshot 07.png matches
+Binary file ./step13 - Pausing With Nanosleep/Screenshot 05.png matches
+Binary file ./step13 - Pausing With Nanosleep/Screenshot 08.png matches
+Binary file ./step13 - Pausing With Nanosleep/Screenshot 01.png matches
+Binary file ./step13 - Pausing With Nanosleep/Screenshot 02.png matches
+Binary file ./step11 - Writing Files/Screenshot 10.png matches
+Binary file ./step11 - Writing Files/Screenshot 04.png matches
+Binary file ./step11 - Writing Files/Screenshot 09.png matches
+Binary file ./step11 - Writing Files/Screenshot 11.png matches
+./step11 - Writing Files/linux64.inc:	mov [printSpace], rax
+./step11 - Writing Files/linux64.inc:	mov cl, [rax]
+./step11 - Writing Files/linux64.inc:	mov rsi, [printSpace]
+./step11 - Writing Files/linux64.inc:;	mov [rcx], rbx
+./step11 - Writing Files/linux64.inc:	mov [digitSpacePos], rcx
+./step11 - Writing Files/linux64.inc:	mov rcx, [digitSpacePos]
+./step11 - Writing Files/linux64.inc:	mov [rcx], dl
+./step11 - Writing Files/linux64.inc:	mov [digitSpacePos], rcx
+./step11 - Writing Files/linux64.inc:	mov rcx, [digitSpacePos]
+./step11 - Writing Files/linux64.inc:	mov rcx, [digitSpacePos]
+./step11 - Writing Files/linux64.inc:	mov [digitSpacePos], rcx
+Binary file ./step11 - Writing Files/Screenshot 03.png matches
+Binary file ./step11 - Writing Files/write_file matches
+Binary file ./step11 - Writing Files/Screenshot 12.png matches
+Binary file ./step11 - Writing Files/Screenshot 06.png matches
+Binary file ./step11 - Writing Files/Screenshot 07.png matches
+Binary file ./step11 - Writing Files/Screenshot 05.png matches
+Binary file ./step11 - Writing Files/Screenshot 13.png matches
+Binary file ./step11 - Writing Files/Screenshot 08.png matches
+Binary file ./step11 - Writing Files/write_file.o matches
+Binary file ./step11 - Writing Files/Screenshot 01.png matches
+Binary file ./step11 - Writing Files/Screenshot 02.png matches
+./step06 - Subroutine to Print Strings/hello.asm:    mov cl, [rax]           ; Check if the current symbol (stored in the lowest byte) is 0.
+Binary file ./step02 - Hello, World! Breakdown/Screenshot20.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot17 - sys_write.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot21.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot05.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot27.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot14.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot22.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot24.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot13.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot12.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot16.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot18.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot19.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot03.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot26.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot06.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot10 - syscal list.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot07 - registers.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot02.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot25.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot08.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot04.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot23.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot15.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot01.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot11.png matches
+Binary file ./step02 - Hello, World! Breakdown/Screenshot09 - syscal inputs by reigster.png matches
+Binary file ./step12 - Reading Files/Screenshot 10.png matches
+Binary file ./step12 - Reading Files/Screenshot 04.png matches
+Binary file ./step12 - Reading Files/Screenshot 09.png matches
+Binary file ./step12 - Reading Files/Screenshot 11.png matches
+./step12 - Reading Files/linux64.inc:	mov [printSpace], rax
+./step12 - Reading Files/linux64.inc:	mov cl, [rax]
+./step12 - Reading Files/linux64.inc:	mov rsi, [printSpace]
+./step12 - Reading Files/linux64.inc:;	mov [rcx], rbx
+./step12 - Reading Files/linux64.inc:	mov [digitSpacePos], rcx
+./step12 - Reading Files/linux64.inc:	mov rcx, [digitSpacePos]
+./step12 - Reading Files/linux64.inc:	mov [rcx], dl
+./step12 - Reading Files/linux64.inc:	mov [digitSpacePos], rcx
+./step12 - Reading Files/linux64.inc:	mov rcx, [digitSpacePos]
+./step12 - Reading Files/linux64.inc:	mov rcx, [digitSpacePos]
+./step12 - Reading Files/linux64.inc:	mov [digitSpacePos], rcx
+Binary file ./step12 - Reading Files/Screenshot 03.png matches
+Binary file ./step12 - Reading Files/read_file matches
+Binary file ./step12 - Reading Files/Screenshot 12.png matches
+Binary file ./step12 - Reading Files/Screenshot 06.png matches
+Binary file ./step12 - Reading Files/Screenshot 07.png matches
+Binary file ./step12 - Reading Files/Screenshot 05.png matches
+Binary file ./step12 - Reading Files/Screenshot 13.png matches
+Binary file ./step12 - Reading Files/Screenshot 08.png matches
+Binary file ./step12 - Reading Files/read_file.o matches
+Binary file ./step12 - Reading Files/Screenshot 01.png matches
+Binary file ./step12 - Reading Files/Screenshot 02.png matches
+Binary file ./step03 - Jumps, Calls, Comparisons/Screenshot10.png matches
+Binary file ./step03 - Jumps, Calls, Comparisons/Screenshot05.png matches
+Binary file ./step03 - Jumps, Calls, Comparisons/Screenshot09.png matches
+Binary file ./step03 - Jumps, Calls, Comparisons/Screenshot03.png matches
+Binary file ./step03 - Jumps, Calls, Comparisons/Screenshot06.png matches
+Binary file ./step03 - Jumps, Calls, Comparisons/Screenshot02.png matches
+Binary file ./step03 - Jumps, Calls, Comparisons/Screenshot07.png matches
+Binary file ./step03 - Jumps, Calls, Comparisons/Screenshot08.png matches
+Binary file ./step03 - Jumps, Calls, Comparisons/Screenshot04.png matches
+Binary file ./step03 - Jumps, Calls, Comparisons/Screenshot01.png matches
+Binary file ./step03 - Jumps, Calls, Comparisons/Screenshot11.png matches
+Binary file ./step07 - Macros/Screenshot10.png matches
+Binary file ./step07 - Macros/macros matches
+Binary file ./step07 - Macros/Screenshot05.png matches
+Binary file ./step07 - Macros/Screenshot14.png matches
+./step07 - Macros/macros.asm:    mov [digit], al
+Binary file ./step07 - Macros/Screenshot09.png matches
+Binary file ./step07 - Macros/Screenshot13.png matches
+./step07 - Macros/linux64.inc:	mov cl, [rax]
+Binary file ./step07 - Macros/Screenshot12.png matches
+Binary file ./step07 - Macros/Screenshot16.png matches
+Binary file ./step07 - Macros/Screenshot03.png matches
+Binary file ./step07 - Macros/hello matches
+Binary file ./step07 - Macros/Screenshot06.png matches
+Binary file ./step07 - Macros/Screenshot02.png matches
+Binary file ./step07 - Macros/Screenshot07.png matches
+Binary file ./step07 - Macros/Screenshot08.png matches
+Binary file ./step07 - Macros/Screenshot04.png matches
+Binary file ./step07 - Macros/Screenshot15.png matches
+Binary file ./step07 - Macros/Screenshot01.png matches
+Binary file ./step07 - Macros/Screenshot11.png matches
+Binary file ./step10 - Introduction to Files and File Permissions/Screenshot 10.png matches
+Binary file ./step10 - Introduction to Files and File Permissions/Screenshot 04.png matches
+Binary file ./step10 - Introduction to Files and File Permissions/Screenshot 09.png matches
+Binary file ./step10 - Introduction to Files and File Permissions/Screenshot 11.png matches
+Binary file ./step10 - Introduction to Files and File Permissions/Screenshot 03.png matches
+Binary file ./step10 - Introduction to Files and File Permissions/Screenshot 06.png matches
+Binary file ./step10 - Introduction to Files and File Permissions/Screenshot 07.png matches
+Binary file ./step10 - Introduction to Files and File Permissions/Screenshot 05.png matches
+Binary file ./step10 - Introduction to Files and File Permissions/Screenshot 08.png matches
+Binary file ./step10 - Introduction to Files and File Permissions/Screenshot 01.png matches
+Binary file ./step10 - Introduction to Files and File Permissions/Screenshot 02.png matches
+Binary file ./step05 - Math Operations and the Stack/Screenshot10.png matches
+./step05 - Math Operations and the Stack/display_digit.asm:	mov [digit], al 		;Move the lowes 8 bits of rax (i.e. 1 byte or a char) to the digit adress.
+Binary file ./step05 - Math Operations and the Stack/Screenshot05.png matches
+Binary file ./step05 - Math Operations and the Stack/Screenshot14.png matches
+Binary file ./step05 - Math Operations and the Stack/display_digit_mine_1 matches
+Binary file ./step05 - Math Operations and the Stack/Screenshot09.png matches
+./step05 - Math Operations and the Stack/display_digit_mine_3.asm:	;ORIG mov [digit], al 	;Move the lowes 8 bits of rax (i.e. 1 byte or a char) to the digit adress.
+./step05 - Math Operations and the Stack/display_digit_mine_3.asm:	mov [digit], rax ;MINE
+Binary file ./step05 - Math Operations and the Stack/Screenshot13.png matches
+Binary file ./step05 - Math Operations and the Stack/Screenshot12.png matches
+Binary file ./step05 - Math Operations and the Stack/Screenshot16.png matches
+./step05 - Math Operations and the Stack/display_digit_mine_1.asm:	;ORIG mov [digit], al 	;Move the lowes 8 bits of rax (i.e. 1 byte or a char) to the digit adress.
+./step05 - Math Operations and the Stack/display_digit_mine_1.asm:	mov [digit], rax ;MINE
+Binary file ./step05 - Math Operations and the Stack/Screenshot03.png matches
+Binary file ./step05 - Math Operations and the Stack/display_digit_mine_2 matches
+Binary file ./step05 - Math Operations and the Stack/Screenshot06.png matches
+Binary file ./step05 - Math Operations and the Stack/Screenshot02.png matches
+Binary file ./step05 - Math Operations and the Stack/Screenshot07.png matches
+Binary file ./step05 - Math Operations and the Stack/Screenshot08.png matches
+Binary file ./step05 - Math Operations and the Stack/Screenshot04.png matches
+Binary file ./step05 - Math Operations and the Stack/Screenshot15.png matches
+./step05 - Math Operations and the Stack/display_digit_mine_2.asm:	mov [digit], al 	;Move the lowes 8 bits of rax (i.e. 1 byte or a char) to the digit adress.
+./step05 - Math Operations and the Stack/display_digit_mine_2.asm:	;MINE mov [digit], rax
+Binary file ./step05 - Math Operations and the Stack/Screenshot01.png matches
+Binary file ./step05 - Math Operations and the Stack/Screenshot11.png matches
+Binary file ./step08 - Subroutine to Print Integers/print_integers matches
+./step08 - Subroutine to Print Integers/print_integers.asm:    mov [rcx], rbx
+./step08 - Subroutine to Print Integers/print_integers.asm:    mov [digitSpacePos], rcx        ; Store the position incremented.
+./step08 - Subroutine to Print Integers/print_integers.asm:    mov rcx, [digitSpacePos]        ; Unlike the initial 'mov rcx, digitSpace' above, which was actually the 1st position of the digitSpace byte series, rcx gets now the current position that digitSpacePos stores.
+./step08 - Subroutine to Print Integers/print_integers.asm:    mov [rcx], dl
+./step08 - Subroutine to Print Integers/print_integers.asm:    mov [digitSpacePos], rcx
+./step08 - Subroutine to Print Integers/print_integers.asm:    mov rcx, [digitSpacePos]
+./step08 - Subroutine to Print Integers/print_integers.asm:    mov rcx, [digitSpacePos]
+./step08 - Subroutine to Print Integers/print_integers.asm:    mov [digitSpacePos], rcx
+Binary file ./step09 - Command Line Arguments/display_agrc matches
+Binary file ./step09 - Command Line Arguments/Screenshot 04.png matches
+Binary file ./step09 - Command Line Arguments/argtest.o matches
+Binary file ./step09 - Command Line Arguments/display_agrc.o matches
+Binary file ./step09 - Command Line Arguments/argtest matches
+./step09 - Command Line Arguments/linux64.inc:    mov [printSpace], rax
+./step09 - Command Line Arguments/linux64.inc:    mov cl, [rax]
+./step09 - Command Line Arguments/linux64.inc:    mov rsi, [printSpace]
+./step09 - Command Line Arguments/linux64.inc:;   mov [rcx], rbx
+./step09 - Command Line Arguments/linux64.inc:    mov [digitSpacePos], rcx
+./step09 - Command Line Arguments/linux64.inc:    mov rcx, [digitSpacePos]
+./step09 - Command Line Arguments/linux64.inc:    mov [rcx], dl
+./step09 - Command Line Arguments/linux64.inc:    mov [digitSpacePos], rcx
+./step09 - Command Line Arguments/linux64.inc:    mov rcx, [digitSpacePos]
+./step09 - Command Line Arguments/linux64.inc:    mov rcx, [digitSpacePos]
+./step09 - Command Line Arguments/linux64.inc:    mov [digitSpacePos], rcx
+Binary file ./step09 - Command Line Arguments/Screenshot 03.png matches
+./step09 - Command Line Arguments/argtest.asm:    mov [argPos], rax
+./step09 - Command Line Arguments/argtest.asm:    mov [argc], rax
+./step09 - Command Line Arguments/argtest.asm:    mov rax, [argPos]
+./step09 - Command Line Arguments/argtest.asm:    mov [argPos], rax
+./step09 - Command Line Arguments/argtest.asm:    mov rax, [argPos]
+./step09 - Command Line Arguments/argtest.asm:    mov rbx, [argc]
+Binary file ./step09 - Command Line Arguments/Screenshot 06.png matches
+Binary file ./step09 - Command Line Arguments/Screenshot 05.png matches
+Binary file ./step09 - Command Line Arguments/Screenshot 01.png matches
+Binary file ./step09 - Command Line Arguments/Screenshot 02.png matches
