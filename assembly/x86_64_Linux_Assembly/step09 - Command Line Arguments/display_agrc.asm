@@ -1,7 +1,8 @@
 %include "linux64.inc"
 
-section .data
-    strNewline db 10,0
+;ORIG section .data
+section .rodata ;MINE
+    newline db 10,0
     
 section .text
     global _start
@@ -9,5 +10,5 @@ section .text
 _start:
     pop rax
     printVal rax
-    print strNewline
+    print newline
     exit
