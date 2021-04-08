@@ -2,7 +2,11 @@
 
 section .data
     filename db "myfile.txt",0
-    text db "Here's some text."
+    ;ORIG text db "Here's some text."
+    text db "Here's some text.",10 ;MINE
+    len	equ $-text ;MINE: Smallest x86 ELF Hello World @ http://timelessname.com/elfbin/
+    fileDescriptor db "File descriptor: ",0 ;MINE
+    cr db "",10,0 ;MINE
 
 section .text
     global _start
@@ -14,12 +18,18 @@ _start:
     mov rdx, 0644o
     syscall
     
-    push rax
+    push rax ;Store the opened file descriptor on the stack.
+
     mov rdi, rax
     mov rax, SYS_WRITE
     mov rsi, text
-    mov rdx, 17
+    ;ORIG mov rdx, 17
+    mov rdx, len ;MINE
     syscall
+
+    print fileDescriptor ;MINE
+    printVal [rsp] ;MINE Display the file descriptor stored on the stack.
+    print cr ;MINE
 
     mov rax, SYS_CLOSE
     pop rdi
